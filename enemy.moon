@@ -25,44 +25,62 @@ class Enemy extends Entity
 
       toward_player = Vec2d(@world.player\center!) - Vec2d(@center!)
       dist_to_player = toward_player\len!
-
-      dir = if dist_to_player < 150
-        left_of_player = toward_player[1] > 0
-        pick_dist {
-          left: 1 + (left_of_player and 1 or 0)
-          right: 1 + (left_of_player and 0 or 1)
-          player: 3
-        }
-      else
-        pick_dist {
-          left: 3
-          right: 3
-          player: 2
-        }
+      left_of_player = toward_player[1] > 0
 
       switch pick_dist {
-        -- move: 1
-        charge: 1
+        move: 1
+        attack: 1
       }
-        when "charge"
-          amount = rand 500, 700
-          @move_accel = switch dir
+        when "move"
+          print "moving"
+          dir = if dist_to_player < 150
+            pick_dist {
+              left: 1 + (left_of_player and 1 or 0)
+              right: 1 + (left_of_player and 0 or 1)
+              player: 3
+            }
+          else
+            pick_dist {
+              left: 3
+              right: 3
+              player: 2
+            }
+
+          dir = switch dir
             when "left"
-              Vec2d -amount, 0
+              Vec2d -1, 0
             when "right"
-              Vec2d amount, 0
+              Vec2d 1, 0
             when "player"
-              (toward_player)\normalized! * amount
+              (toward_player)\normalized!
 
-          wait 0.3
-          @move_accel = false
 
-          @slowing += 1
-          wait 1.0
-          @slowing -= 1
-          wait 0.5
+          switch pick_dist {
+            move: 1
+            charge: 1
+          }
+            when "charge"
+              await @\charge, dir
+            when "move"
+              print " * move"
+        when "attack"
+          print "attacking"
 
+      wait 0.5
       again!
+
+  charge: (dir, fn) =>
+    print "charging"
+    @seqs\add Sequence ->
+      amount = rand 500, 700
+      @move_accel = dir * amount
+      wait 0.3
+      @move_accel = false
+
+      @slowing += 1
+      wait 1.0
+      @slowing -= 1
+      fn!
 
   update: (dt, world) =>
     @world = world
