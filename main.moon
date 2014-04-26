@@ -3,7 +3,7 @@ require "lovekit.all"
 {graphics: g} = love
 
 class Player extends Entity
-  speed: 200
+  speed: 20
   max_speed: 1500
 
   w: 40
@@ -20,18 +20,21 @@ class Player extends Entity
     cx, cy
 
   update: (dt, world) =>
-    @accel = CONTROLLER\movement_vector @speed * dt
-    decel = @speed * dt
+    @accel = CONTROLLER\movement_vector @speed
+    decel = @speed
 
     if @accel[1] != 0
       @facing = @accel[1] > 0 and "right" or "left"
 
     if @accel[1] == 0
       -- not moving in x, shrink it
-      @vel[1] = dampen @vel[1], decel
+      @vel[1] = dampen @vel[1], decel / 100
 
     if @accel[2] == 0
       @vel[2] = dampen @vel[2], decel
+
+    -- apply the ocean
+    world\gravity @vel, dt
 
     @vel\adjust unpack @accel * dt * @speed
     @vel\cap @max_speed
@@ -47,6 +50,8 @@ class Player extends Entity
     true
 
 class Ocean
+  gravity_mag: 200
+
   new: =>
     @viewport = Viewport scale: GAME_CONFIG.scale
     @entities = DrawList!
@@ -59,18 +64,30 @@ class Ocean
     @viewport\center_on @player
 
   draw: =>
-
     @viewport\apply!
+    COLOR\pusha 128
+    show_grid @viewport, 20, 20
+    COLOR\pop!
+
     @bounds\draw {255,255,255,20}
 
     @entities\draw!
-
     @viewport\pop!
+
+  gravity: (vec, dt) =>
+    return unless @gravity_pull
+    print @gravity_pull
+    vec\adjust unpack @gravity_pull * dt
 
   collides: (thing) =>
     not @bounds\contains_box thing
 
   update: (dt) =>
+    @_t or= 0
+    @_t += dt
+
+    @gravity_pull = Vec2d.from_angle(90 + math.sin(@_t * 2) * 10) * @gravity_mag
+
     @viewport\center_on @player, nil, dt
     @entities\update dt, @
 
