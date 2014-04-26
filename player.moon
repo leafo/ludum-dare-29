@@ -62,6 +62,9 @@ class Player extends Entity
     else
       @x
 
+    if @mouth_emitter
+      @mouth_emitter.x, @mouth_emitter.y = @mouth_box\center!
+
   update: (dt, world) =>
     @strafing = CONTROLLER\is_down "attack"
     if CONTROLLER\tapped "attack"
@@ -77,7 +80,6 @@ class Player extends Entity
     if (dtu or dtd) and not @boost_seq
       boost_power = 1500
       @boost_seq = @seqs\add Sequence ->
-        print "start boost"
         @boost_accel = Vec2d 0, dtu and -boost_power or boost_power
         wait 0.15
         @boost_accel = false
@@ -117,9 +119,6 @@ class Player extends Entity
 
     if cy
       @vel[2] = -@vel[2] / 2
-
-    if @mouth_emitter
-      @mouth_emitter.x, @mouth_emitter.y = @mouth_box\center!
 
     @update_mouth!
 

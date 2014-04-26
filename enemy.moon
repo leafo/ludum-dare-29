@@ -1,7 +1,7 @@
 
 {graphics: g} = love
 
-import BloodEmitter from require "particles"
+import BubbleEmitter, BloodEmitter from require "particles"
 
 class Enemy extends Entity
   is_enemy: true
@@ -114,6 +114,9 @@ class Enemy extends Entity
       await (fn) ->
         @effects\add ShakeEffect 0.5, nil, nil, fn
 
+      @mouth_emitter = BubbleEmitter @world, @mouth_box\center!
+      @world.particles\add @mouth_emitter
+
       @move_accel = dir * attack_force
       wait 0.1
       @move_accel = false
@@ -138,6 +141,9 @@ class Enemy extends Entity
     if @slowing >= 0
       dampen_vector @vel, dt * 100 * (@slowing * 2 + 1)
 
+    if not @stunned and ax != 0
+      @facing = ax > 0 and "right" or "left"
+
     @vel\adjust ax * dt, ay * dt
     cx, cy = @fit_move @vel[1] * dt, @vel[2] * dt, world
 
@@ -147,6 +153,8 @@ class Enemy extends Entity
     if cy
       @vel[2] = -@vel[2] / 2
 
+
+    @update_mouth!
     @health > 0
 
   take_hit: (p, world) =>
@@ -184,11 +192,24 @@ class Enemy extends Entity
 
     super color
 
+    COLOR\push {255, 0, 255, 128}
+    @mouth_box\draw!
+    COLOR\pop!
+
     if @slowing != 0
       g.print "Slowing #{@slowing}", @x, @y
 
     @effects\after!
 
+  update_mouth: =>
+    @mouth_box or= Box @x, @y, 10, 10
+    @mouth_box.y = @y + (@h - @mouth_box.w) / 2
+    @mouth_box.x = if @facing == "right"
+      @x + @w - @mouth_box.w
+    else
+      @x
 
+    if @mouth_emitter
+      @mouth_emitter.x, @mouth_emitter.y = @mouth_box\center!
 
 { :Enemy }

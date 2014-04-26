@@ -3,7 +3,6 @@ require "lovekit.all"
 {graphics: g} = love
 
 import Hud from require "hud"
-import BubbleEmitter from require "particles"
 import Player from require "player"
 import Enemy from require "enemy"
 
