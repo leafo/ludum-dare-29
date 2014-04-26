@@ -1,6 +1,8 @@
 
 {graphics: g} = love
 
+import BloodEmitter from require "particles"
+
 class Enemy extends Entity
   is_enemy: true
   w: 40
@@ -91,6 +93,7 @@ class Enemy extends Entity
     power = 3000
 
     world.viewport\shake!
+    world.particles\add BloodEmitter world, @center!
 
     @health -= 10
 

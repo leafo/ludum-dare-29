@@ -1,6 +1,26 @@
 
 { graphics: g } = love
 
+class Blood extends PixelParticle
+  size: 50
+  life: 3
+
+  new: (@x, @y) =>
+    @size = rand 20,50
+    @vel = Vec2d.random! * rand(20, 40)
+    @accel = Vec2d 0, 0
+
+  draw: =>
+    t = ad_curve (1 - @life / @@life), 0, 0.05, 0.8
+
+    COLOR\push {80,10,10, t * 128}
+    super!
+    COLOR\pop!
+
+  update: (dt) =>
+    dampen_vector @vel, dt * 10
+    super dt
+
 class Bubble extends PixelParticle
   size: 3
   life: 10.0
@@ -27,6 +47,14 @@ class BubbleEmitter extends Emitter
 
     Bubble x,y
 
+
+class BloodEmitter extends Emitter
+  count: 4
+  duration: 0.5
+  make_particle: (x, y) =>
+    Blood x,y
+
 {
   :BubbleEmitter
+  :BloodEmitter
 }

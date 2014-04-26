@@ -89,7 +89,6 @@ class Player extends Entity
         @facing = @accel[1] > 0 and "right" or "left"
 
       if @boost_accel
-        print "applying boost"
         @accel[1] += @boost_accel[1]
         @accel[2] += @boost_accel[2]
 
