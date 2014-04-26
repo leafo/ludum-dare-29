@@ -12,10 +12,43 @@ class Enemy extends Entity
 
   new: (...) =>
     super ...
+    @accel = Vec2d!
     @seqs = DrawList!
 
-  update: (dt) =>
+  take_hit: (p, world) =>
+    power = 5000
+    @stunned = @seqs\add Sequence ->
+      dir = (Vec2d(@center!) - Vec2d(p\center!))\normalized!
+      dir[2] = dir[2] * 2
+      @accel = dir\normalized! * power
+
+      wait 0.1
+      @accel = Vec2d!
+      wait 0.5
+      @stunned = false
+
+  update: (dt, world) =>
+    @seqs\update dt
+
+    dampen_vector @vel, dt * 2000
+    @vel\adjust unpack @accel * dt
+    cx, cy = @fit_move @vel[1] * dt, @vel[2] * dt, world
+
+    if cx
+      @vel[1] = -@vel[1] / 2
+
+    if cy
+      @vel[2] = -@vel[2] / 2
+
     true
+
+  draw: =>
+    color = if @stunned
+      {255,200,200}
+    else
+      {255,255,255}
+
+    super color
 
 class Player extends Entity
   is_player: true
@@ -121,7 +154,11 @@ class Player extends Entity
     COLOR\pop!
 
   take_hit: (enemy, world) =>
-    return if @attacking or @stunned
+    if @attacking
+      enemy\take_hit @, world
+      return
+
+    return if @stunned
     knockback = 400
 
     @stunned = @seqs\add Sequence ->
@@ -182,6 +219,8 @@ class Ocean
 
     for e in *@entities
       continue unless e.is_enemy
+      continue if e.stunned
+
       if @player\touches_box e
         @player\take_hit e, world
 
