@@ -228,8 +228,20 @@ class Ocean
       if @player\touches_box e
         @player\take_hit e, @
 
+load_font = (img, chars)->
+  font_image = imgfy img
+  g.newImageFont font_image.tex, chars
 
 love.load = ->
+  fonts = {
+    default: load_font "images/font1.png", [[ ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~!"#$%&'()*+,-./0123456789:;<=>?]]
+  }
+
+  g.setFont fonts.default
+
+
+  g.setBackgroundColor 15,17, 18
+
   export CONTROLLER = Controller GAME_CONFIG.keys
   export DISPATCHER = Dispatcher Ocean!
 
