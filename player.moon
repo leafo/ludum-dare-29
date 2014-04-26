@@ -1,5 +1,6 @@
 
 import BubbleEmitter from require "particles"
+
 {graphics: g} = love
 
 class Player extends Entity
@@ -120,7 +121,8 @@ class Player extends Entity
 
   take_hit: (enemy, world) =>
     if @attacking
-      enemy\take_hit @, world
+      if @mouth_box\touches_box enemy
+        enemy\take_hit @, world
       return
 
     return if @stunned
