@@ -9,6 +9,7 @@ class Enemy extends Entity
   h: 20
 
   slowing: 0
+  threat: 0
 
   health: 20*100
   max_health: 20
@@ -24,16 +25,25 @@ class Enemy extends Entity
       if @stunned
         wait_until -> not @stunned
 
+      if @just_hit
+        print "just_hit:", @just_hit
+        @just_hit = false
+
       toward_player = @vector_to @world.player
       dist_to_player = toward_player\len!
       left_of_player = toward_player[1] > 0
 
-      switch pick_dist {
-        move: 1
-        attack: 1
-      }
+      print "threat: #{@threat}"
+      move, attack = switch @threat
+        when 0
+          100, 1
+        when 1
+          4, 1
+        else
+          1, 2
+
+      switch pick_dist { :move, :attack }
         when "move"
-          print "moving"
           dir = if dist_to_player < 150
             pick_dist {
               left: 1 + (left_of_player and 1 or 0)
@@ -55,10 +65,15 @@ class Enemy extends Entity
             when "player"
               (toward_player)\normalized!
 
-          switch pick_dist {
-            move: 1
-            charge: 1
-          }
+          move, charge = switch @threat
+            when 0
+              3,1
+            when 1
+              1,1
+            else
+              1,3
+
+          switch pick_dist { :move, :charge }
             when "charge"
               await @\charge, dir
             when "move"
@@ -135,9 +150,9 @@ class Enemy extends Entity
 
     @health > 0
 
-
   take_hit: (p, world) =>
     return if @stunned
+    @just_hit = true
     power = 3000
 
     world.viewport\shake!
