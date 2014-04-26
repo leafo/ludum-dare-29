@@ -16,7 +16,10 @@ class Enemy extends Entity
     @seqs = DrawList!
 
   take_hit: (p, world) =>
+    return if @stunned
     power = 5000
+
+    world.viewport\shake!
     @stunned = @seqs\add Sequence ->
       dir = (Vec2d(@center!) - Vec2d(p\center!))\normalized!
       dir[2] = dir[2] * 2
@@ -160,6 +163,7 @@ class Player extends Entity
 
     return if @stunned
     knockback = 400
+    world.viewport\shake nil, nil, 2
 
     @stunned = @seqs\add Sequence ->
       dir = (Vec2d(@center!) - Vec2d(enemy\center!))\normalized!
@@ -171,7 +175,7 @@ class Ocean
   gravity_mag: 130
 
   new: =>
-    @viewport = Viewport scale: GAME_CONFIG.scale
+    @viewport = EffectViewport scale: GAME_CONFIG.scale
     @entities = DrawList!
 
     @bounds = Box 0,0, 1000, 1000
@@ -209,9 +213,9 @@ class Ocean
   update: (dt) =>
     @_t or= 0
     @_t += dt
-
     @gravity_pull = Vec2d.from_angle(90 + math.sin(@_t * 2) * 7) * @gravity_mag
 
+    @viewport\update dt
     @viewport\center_on @player, nil, dt
 
     @entities\update dt, @
@@ -222,7 +226,7 @@ class Ocean
       continue if e.stunned
 
       if @player\touches_box e
-        @player\take_hit e, world
+        @player\take_hit e, @
 
 
 love.load = ->
