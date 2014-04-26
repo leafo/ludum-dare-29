@@ -33,7 +33,7 @@ class Player extends Entity
     return if @attacking or @attacking_cooloff
     attack_force = 2500
 
-    @mouth_emitter = BubbleEmitter world, @x, @y
+    @mouth_emitter = BubbleEmitter world, @mouth_box\center!
     world.particles\add @mouth_emitter
 
     @attacking = @seqs\add Sequence ->
@@ -52,6 +52,14 @@ class Player extends Entity
       @attacking_cooloff = true
       wait 0.5
       @attacking_cooloff = false
+
+  update_mouth: =>
+    @mouth_box or= Box @x, @y, 10, 10
+    @mouth_box.y = @y + (@h - @mouth_box.w) / 2
+    @mouth_box.x = if @facing == "right"
+      @x + @w - @mouth_box.w
+    else
+      @x
 
   update: (dt, world) =>
     @seqs\update dt, world
@@ -91,8 +99,9 @@ class Player extends Entity
       @vel[2] = -@vel[2] / 2
 
     if @mouth_emitter
-      @mouth_emitter.x = @x
-      @mouth_emitter.y = @y
+      @mouth_emitter.x, @mouth_emitter.y = @mouth_box\center!
+
+    @update_mouth!
 
     true
 
@@ -106,14 +115,7 @@ class Player extends Entity
       {0,255, 0, 128}
 
     COLOR\push color
-    size = 10
-    y = @y + (@h - size) / 2
-
-    if @facing == "right"
-      g.rectangle "fill", @x + @w - size, y, size, size
-    else
-      g.rectangle "fill", @x, y, 10, 10
-
+    @mouth_box\draw!
     COLOR\pop!
 
   take_hit: (enemy, world) =>
