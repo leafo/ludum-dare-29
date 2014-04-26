@@ -33,7 +33,7 @@ class Ocean
     x, y = @viewport\unproject x, y
     dir = (Vec2d(x,y) - Vec2d(@enemy\center!))\normalized!
     print dir
-    @enemy\move dir, ->
+    @enemy\attack @player, ->
 
   on_key: =>
 

@@ -63,7 +63,7 @@ class Enemy extends Entity
             when "move"
               await @\move, dir
         when "attack"
-          print "attacking"
+          await @\attack, @world.player
 
       wait 0.5
       again!
@@ -80,7 +80,6 @@ class Enemy extends Entity
       fn!
 
   charge: (dir, fn) =>
-    print "charging"
     @seqs\add Sequence ->
       amount = rand 500, 700
       @move_accel = dir * amount
@@ -90,6 +89,21 @@ class Enemy extends Entity
       @slowing += 1
       wait 1.0
       @slowing -= 1
+      fn!
+
+  attack: (thing, fn) =>
+    dir = @vector_to(thing)\normalized!
+    attack_force = 4000
+
+    @seqs\add Sequence ->
+      @move_accel = dir * attack_force
+      wait 0.1
+      @move_accel = false
+      wait 0.1
+      @slowing += 4
+      wait 0.9
+      @slowing -= 4
+
       fn!
 
   update: (dt, world) =>
@@ -103,7 +117,7 @@ class Enemy extends Entity
       ay += update_accel[2]
 
     if @slowing >= 0
-      dampen_vector @vel, dt * 100 * (@slowing > 0 and 3 or 1)
+      dampen_vector @vel, dt * 100 * (@slowing * 2 + 1)
 
     @vel\adjust ax * dt, ay * dt
     cx, cy = @fit_move @vel[1] * dt, @vel[2] * dt, world
