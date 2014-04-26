@@ -9,6 +9,9 @@ class Enemy extends Entity
   w: 40
   h: 20
 
+  health: 20
+  max_health: 20
+
   facing: "left"
 
   new: (...) =>
@@ -21,6 +24,9 @@ class Enemy extends Entity
     power = 5000
 
     world.viewport\shake!
+
+    @health -= 10
+
     @stunned = @seqs\add Sequence ->
       dir = (Vec2d(@center!) - Vec2d(p\center!))\normalized!
       dir[2] = dir[2] * 2
@@ -44,7 +50,7 @@ class Enemy extends Entity
     if cy
       @vel[2] = -@vel[2] / 2
 
-    true
+    @health > 0
 
   draw: =>
     color = if @stunned
@@ -190,7 +196,7 @@ class Ocean
     @viewport = EffectViewport scale: GAME_CONFIG.scale
     @entities = DrawList!
 
-    @bounds = Box 0,0, 1000, 1000
+    @bounds = Box 0,0, 1000, 500
 
     @player = Player 20, 20
     @entities\add @player
