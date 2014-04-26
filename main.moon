@@ -51,9 +51,14 @@ class Ocean
       @entities\draw!
       @particles\draw!
 
-      @hud\draw @viewport
 
       @viewport\pop!
+
+    @viewport\apply!
+
+    @hud\draw @viewport
+
+    @viewport\pop!
 
   gravity: (vec, dt) =>
     do return
