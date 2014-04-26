@@ -1,6 +1,6 @@
 export GAME_CONFIG = {
   scale: 2
-  key: {
+  keys: {
     confirm: "x"
     cancel: "c"
 
