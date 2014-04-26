@@ -71,7 +71,7 @@ class Player extends Entity
     dtu, dtd = CONTROLLER\double_tapped "up", "down"
 
     if (dtu or dtd) and not @boost_seq
-      boost_power = 1000
+      boost_power = 2500
       @boost_seq = @seqs\add Sequence ->
         print "start boost"
         @boost_accel = Vec2d 0, dtu and -boost_power or boost_power

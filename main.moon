@@ -15,11 +15,12 @@ class Ocean
     @entities = DrawList!
     @particles = DrawList!
 
-    @bounds = Box 0,0, 1000, 500
+    @bounds = Box 0,0, 250, 200
 
     @player = Player 20, 20
     @entities\add @player
     @entities\add Enemy 100, 100
+    @entities\add Enemy 160, 120
 
     @viewport\center_on @player
     @hud = Hud!
