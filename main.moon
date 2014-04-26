@@ -2,6 +2,8 @@ require "lovekit.all"
 
 {graphics: g} = love
 
+import Hud from require "hud"
+
 class Enemy extends Entity
   is_enemy: true
   speed: 20
@@ -185,6 +187,7 @@ class Ocean
     @entities\add Enemy 100, 100
 
     @viewport\center_on @player
+    @hud = Hud!
 
     @collide = UniformGrid!
 
@@ -201,6 +204,9 @@ class Ocean
     @bounds\draw {255,255,255,20}
 
     @entities\draw!
+
+    @hud\draw @viewport
+
     @viewport\pop!
 
   gravity: (vec, dt) =>
@@ -214,6 +220,8 @@ class Ocean
     @_t or= 0
     @_t += dt
     @gravity_pull = Vec2d.from_angle(90 + math.sin(@_t * 2) * 7) * @gravity_mag
+
+    @hud\update dt
 
     @viewport\update dt
     @viewport\center_on @player, nil, dt
