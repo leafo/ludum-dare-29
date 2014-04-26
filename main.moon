@@ -2,7 +2,23 @@ require "lovekit.all"
 
 {graphics: g} = love
 
+class Enemy extends Entity
+  is_enemy: true
+  speed: 20
+  w: 40
+  h: 20
+
+  facing: "left"
+
+  new: (...) =>
+    super ...
+    @seqs = DrawList!
+
+  update: (dt) =>
+    true
+
 class Player extends Entity
+  is_player: true
   speed: 20
   max_speed: 100
   facing: "right"
@@ -25,6 +41,7 @@ class Player extends Entity
     cx, cy
 
   attack: (world) =>
+    return if @stunned
     return if @attacking or @attacking_cooloff
     attack_speed = 300
 
@@ -56,6 +73,9 @@ class Player extends Entity
       if @accel[1] != 0
         @facing = @accel[1] > 0 and "right" or "left"
 
+    if @stunned
+      @accel[1], @accel[2] = unpack @stun_accel
+
     if @accel[1] == 0
       -- not moving in x, shrink it
       @vel[1] = dampen @vel[1], decel
@@ -84,6 +104,8 @@ class Player extends Entity
     super!
     color = if @attacking
       {255,0, 0, 128}
+    elseif @stunned
+      {255,0, 255, 128}
     else
       {0,255, 0, 128}
 
@@ -98,6 +120,16 @@ class Player extends Entity
 
     COLOR\pop!
 
+  take_hit: (enemy, world) =>
+    return if @attacking or @stunned
+    knockback = 400
+
+    @stunned = @seqs\add Sequence ->
+      dir = (Vec2d(@center!) - Vec2d(enemy\center!))\normalized!
+      @stun_accel = dir * knockback
+      wait 0.075
+      @stunned = false
+
 class Ocean
   gravity_mag: 130
 
@@ -109,8 +141,11 @@ class Ocean
 
     @player = Player 20, 20
     @entities\add @player
+    @entities\add Enemy 100, 100
 
     @viewport\center_on @player
+
+    @collide = UniformGrid!
 
   on_key: =>
     if CONTROLLER\is_down "attack"
@@ -141,7 +176,15 @@ class Ocean
     @gravity_pull = Vec2d.from_angle(90 + math.sin(@_t * 2) * 7) * @gravity_mag
 
     @viewport\center_on @player, nil, dt
+
     @entities\update dt, @
+    @collide\clear!
+
+    for e in *@entities
+      continue unless e.is_enemy
+      if @player\touches_box e
+        @player\take_hit e, world
+
 
 love.load = ->
   export CONTROLLER = Controller GAME_CONFIG.keys
