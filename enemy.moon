@@ -23,7 +23,7 @@ class Enemy extends Entity
       if @stunned
         wait_until -> not @stunned
 
-      toward_player = Vec2d(@world.player\center!) - Vec2d(@center!)
+      toward_player = @vector_to @world.player
       dist_to_player = toward_player\len!
       left_of_player = toward_player[1] > 0
 
@@ -54,7 +54,6 @@ class Enemy extends Entity
             when "player"
               (toward_player)\normalized!
 
-
           switch pick_dist {
             move: 1
             charge: 1
@@ -62,12 +61,19 @@ class Enemy extends Entity
             when "charge"
               await @\charge, dir
             when "move"
-              print " * move"
+              await @\move, dir
         when "attack"
           print "attacking"
 
       wait 0.5
       again!
+
+  move: (dir, fn) =>
+    print "moving"
+    @seqs\add Sequence ->
+      wait 1.0
+      @slowing -= 1
+      fn!
 
   charge: (dir, fn) =>
     print "charging"
@@ -116,7 +122,7 @@ class Enemy extends Entity
     @health -= 10
 
     @stunned = @seqs\add Sequence ->
-      dir = (Vec2d(@center!) - Vec2d(p.mouth_box\center!))\normalized!
+      dir = p.mouth_box\vector_to(@)\normalized!
       @stun_accel = dir\normalized! * power
       wait 0.1
       @stun_accel = false

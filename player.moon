@@ -151,7 +151,7 @@ class Player extends Entity
     @stunned = @seqs\add Sequence ->
       @health -= 15
 
-      dir = (Vec2d(@center!) - Vec2d(enemy\center!))\normalized!
+      dir = enemy\vector_to(@)\normalized!
 
       @vel[1] = @vel[1] / 2
       @vel[2] = @vel[2] / 2
