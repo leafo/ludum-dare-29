@@ -30,7 +30,7 @@ class Ocean
 
     @collide = UniformGrid!
 
-    @shader = Ripple!
+    @shader = Ripple @viewport
 
   mousepressed: (x,y) =>
     x, y = @viewport\unproject x, y
