@@ -22,7 +22,7 @@ class Hud
 
     @top_list = HList {
       yalign: "center"
-      Label "Hello"
+      Label "Fish"
       @health_bar
       Label "World"
     }
