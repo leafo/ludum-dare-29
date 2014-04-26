@@ -4,7 +4,7 @@ require "lovekit.all"
 
 class Player extends Entity
   speed: 20
-  max_speed: 1500
+  max_speed: 100
   facing: "right"
 
   w: 40
@@ -25,24 +25,40 @@ class Player extends Entity
     cx, cy
 
   attack: (world) =>
-    return if @attacking
-    @attacking = true
-    @seqs\add Sequence ->
-      wait 1.0
+    return if @attacking or @attacking_cooloff
+    attack_speed = 300
+
+    @attacking = @seqs\add Sequence ->
+      start = love.timer.getTime!
+      @vel[1] = 0
+
+      force = attack_speed
+      force = -force if @facing == "left"
+      @attack_accel = Vec2d force, 0
+
+      tween @attack_accel, 0.15, { 0, 0 }, lerp
+      tween @attack_accel, 0.05, { -force/2, 0 }, lerp
+
       @attacking = false
+      @attacking_cooloff = true
+      wait 0.5
+      @attacking_cooloff = false
 
   update: (dt, world) =>
     @seqs\update dt, world
 
     @accel = CONTROLLER\movement_vector @speed
-    decel = @speed
+    decel = @speed / 10
 
-    if @accel[1] != 0
-      @facing = @accel[1] > 0 and "right" or "left"
+    if @attacking
+      @accel[1] = @attack_accel[1]
+    else
+      if @accel[1] != 0
+        @facing = @accel[1] > 0 and "right" or "left"
 
     if @accel[1] == 0
       -- not moving in x, shrink it
-      @vel[1] = dampen @vel[1], decel / 100
+      @vel[1] = dampen @vel[1], decel
 
     if @accel[2] == 0
       @vel[2] = dampen @vel[2], decel
@@ -52,7 +68,7 @@ class Player extends Entity
       world\gravity @vel, dt
 
     @vel\adjust unpack @accel * dt * @speed
-    @vel\cap @max_speed
+    @vel\cap @max_speed unless @attacking
 
     cx, cy = @fit_move @vel[1] * dt, @vel[2] * dt, world
 
@@ -83,7 +99,7 @@ class Player extends Entity
     COLOR\pop!
 
 class Ocean
-  gravity_mag: 200
+  gravity_mag: 130
 
   new: =>
     @viewport = Viewport scale: GAME_CONFIG.scale
@@ -122,7 +138,7 @@ class Ocean
     @_t or= 0
     @_t += dt
 
-    @gravity_pull = Vec2d.from_angle(90 + math.sin(@_t * 2) * 10) * @gravity_mag
+    @gravity_pull = Vec2d.from_angle(90 + math.sin(@_t * 2) * 7) * @gravity_mag
 
     @viewport\center_on @player, nil, dt
     @entities\update dt, @
