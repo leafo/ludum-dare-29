@@ -68,14 +68,30 @@ class Player extends Entity
     @accel = CONTROLLER\movement_vector @speed
     decel = @speed / 100
 
+    dtu, dtd = CONTROLLER\double_tapped "up", "down"
+
+    if (dtu or dtd) and not @boost_seq
+      boost_power = 1000
+      @boost_seq = @seqs\add Sequence ->
+        print "start boost"
+        @boost_accel = Vec2d 0, dtu and -boost_power or boost_power
+        wait 0.15
+        @boost_accel = false
+        wait 0.3
+        @boost_seq = false
+
     if @attacking
       @accel[1] = @attack_accel[1]
+    elseif @stunned
+      @accel[1], @accel[2] = unpack @stun_accel
     else
       if @accel[1] != 0
         @facing = @accel[1] > 0 and "right" or "left"
 
-    if @stunned
-      @accel[1], @accel[2] = unpack @stun_accel
+      if @boost_accel
+        print "applying boost"
+        @accel[1] += @boost_accel[1]
+        @accel[2] += @boost_accel[2]
 
     if @accel[1] == 0
       -- not moving in x, shrink it
