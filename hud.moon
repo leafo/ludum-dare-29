@@ -18,11 +18,12 @@ class HBar extends Box
 
 class Hud
   new: =>
+    @health_bar = HBar!
+
     @top_list = HList {
       yalign: "center"
-
       Label "Hello"
-      HBar!
+      @health_bar
       Label "World"
     }
 
@@ -33,6 +34,9 @@ class Hud
     g.pop!
 
   update: (dt, world) =>
+    p = world.player
+    @health_bar.p = smooth_approach @health_bar.p, p.health / p.max_health, dt
+
     @top_list\update dt
 
 { :Hud }

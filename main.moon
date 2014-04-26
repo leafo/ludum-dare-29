@@ -60,6 +60,9 @@ class Player extends Entity
   max_speed: 100
   facing: "right"
 
+  health: 100
+  max_health: 100
+
   w: 40
   h: 20
 
@@ -164,13 +167,20 @@ class Player extends Entity
       return
 
     return if @stunned
-    knockback = 400
+    knockback = 2000
     world.viewport\shake nil, nil, 2
 
     @stunned = @seqs\add Sequence ->
+      @health -= 15
+
       dir = (Vec2d(@center!) - Vec2d(enemy\center!))\normalized!
+
+      @vel[1] = @vel[1] / 2
+      @vel[2] = @vel[2] / 2
       @stun_accel = dir * knockback
       wait 0.075
+      @stun_accel = Vec2d!
+      wait 0.3
       @stunned = false
 
 class Ocean
@@ -221,7 +231,7 @@ class Ocean
     @_t += dt
     @gravity_pull = Vec2d.from_angle(90 + math.sin(@_t * 2) * 7) * @gravity_mag
 
-    @hud\update dt
+    @hud\update dt, @
 
     @viewport\update dt
     @viewport\center_on @player, nil, dt
