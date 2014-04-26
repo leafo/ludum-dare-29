@@ -28,8 +28,6 @@ class Ocean
     @collide = UniformGrid!
 
   on_key: =>
-    if CONTROLLER\is_down "attack"
-      @player\attack @
 
   draw: =>
     @viewport\apply!

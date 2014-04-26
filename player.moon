@@ -63,6 +63,10 @@ class Player extends Entity
       @x
 
   update: (dt, world) =>
+    @strafing = CONTROLLER\is_down "attack"
+    if CONTROLLER\tapped "attack"
+      @attack world
+
     @seqs\update dt, world
 
     @accel = CONTROLLER\movement_vector @speed
@@ -71,7 +75,7 @@ class Player extends Entity
     dtu, dtd = CONTROLLER\double_tapped "up", "down"
 
     if (dtu or dtd) and not @boost_seq
-      boost_power = 2500
+      boost_power = 1500
       @boost_seq = @seqs\add Sequence ->
         print "start boost"
         @boost_accel = Vec2d 0, dtu and -boost_power or boost_power
@@ -85,7 +89,7 @@ class Player extends Entity
     elseif @stunned
       @accel[1], @accel[2] = unpack @stun_accel
     else
-      if @accel[1] != 0
+      if @accel[1] != 0 and not @strafing
         @facing = @accel[1] > 0 and "right" or "left"
 
       if @boost_accel
