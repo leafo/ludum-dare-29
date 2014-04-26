@@ -3,7 +3,7 @@
 
 class Blood extends PixelParticle
   size: 50
-  life: 3
+  life: 2
 
   new: (@x, @y) =>
     @size = rand 20,50

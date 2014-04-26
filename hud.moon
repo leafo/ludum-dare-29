@@ -25,6 +25,8 @@ class Hud
       Label "Fish"
       @health_bar
       Label "World"
+      Label ->
+        tostring love.timer.getFPS!
     }
 
   draw: (v) =>
