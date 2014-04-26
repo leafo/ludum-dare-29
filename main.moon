@@ -122,11 +122,14 @@ class Ocean
     @collide\clear!
 
     for e in *@entities
+      continue unless e.alive
+      @collide\add e
+
+    for e in *@collide\get_touching @player
       continue unless e.is_enemy
       continue if e.stunned
+      @player\take_hit e, @
 
-      if @player\touches_box e
-        @player\take_hit e, @
 
 load_font = (img, chars)->
   font_image = imgfy img
