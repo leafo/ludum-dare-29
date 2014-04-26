@@ -69,16 +69,14 @@ class Enemy extends Entity
       again!
 
   move: (dir, fn) =>
-    speed = 50
+    speed = 250
     @seqs\add Sequence ->
-      elapsed = 0
-      during 1, (dt) ->
-        return "cancel" if @stunned
-        elapsed += dt
-        ramp = math.min 1, elapsed / 0.5
-
-        @vel[1] = dir[1] * speed * ramp
-        @vel[2] = dir[2] * speed * ramp
+      @slowing -= 1
+      @move_accel = dir * speed
+      wait 0.15
+      @move_accel = false
+      wait 1.0
+      @slowing += 1
       fn!
 
   charge: (dir, fn) =>
@@ -104,7 +102,8 @@ class Enemy extends Entity
       ax += update_accel[1]
       ay += update_accel[2]
 
-    dampen_vector @vel, dt * 100 * (@slowing > 0 and 3 or 1)
+    if @slowing >= 0
+      dampen_vector @vel, dt * 100 * (@slowing > 0 and 3 or 1)
 
     @vel\adjust ax * dt, ay * dt
     cx, cy = @fit_move @vel[1] * dt, @vel[2] * dt, world
@@ -149,7 +148,7 @@ class Enemy extends Entity
 
     super color
 
-    if @slowing > 0
+    if @slowing != 0
       g.print "Slowing #{@slowing}", @x, @y
 
 
