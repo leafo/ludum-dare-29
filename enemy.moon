@@ -25,15 +25,10 @@ class Enemy extends Entity
       if @stunned
         wait_until -> not @stunned
 
-      if @just_hit
-        print "just_hit:", @just_hit
-        @just_hit = false
-
       toward_player = @vector_to @world.player
       dist_to_player = toward_player\len!
       left_of_player = toward_player[1] > 0
 
-      print "threat: #{@threat}"
       move, attack = switch @threat
         when 0
           100, 1
@@ -41,6 +36,10 @@ class Enemy extends Entity
           4, 1
         else
           1, 2
+
+      if @just_hit
+        attack = 10*attack
+        @just_hit = false
 
       switch pick_dist { :move, :attack }
         when "move"
@@ -152,6 +151,7 @@ class Enemy extends Entity
 
   take_hit: (p, world) =>
     return if @stunned
+    @threat = 3
     @just_hit = true
     power = 3000
 
