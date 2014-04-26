@@ -5,9 +5,14 @@ require "lovekit.all"
 class Player extends Entity
   speed: 20
   max_speed: 1500
+  facing: "right"
 
   w: 40
   h: 20
+
+  new: (...) =>
+    super ...
+    @seqs = DrawList!
 
   looking_at: (viewport) =>
     cx, cy = @center!
@@ -19,7 +24,16 @@ class Player extends Entity
 
     cx, cy
 
+  attack: (world) =>
+    return if @attacking
+    @attacking = true
+    @seqs\add Sequence ->
+      wait 1.0
+      @attacking = false
+
   update: (dt, world) =>
+    @seqs\update dt, world
+
     @accel = CONTROLLER\movement_vector @speed
     decel = @speed
 
@@ -34,7 +48,8 @@ class Player extends Entity
       @vel[2] = dampen @vel[2], decel
 
     -- apply the ocean
-    world\gravity @vel, dt
+    if @accel\is_zero!
+      world\gravity @vel, dt
 
     @vel\adjust unpack @accel * dt * @speed
     @vel\cap @max_speed
@@ -48,6 +63,24 @@ class Player extends Entity
       @vel[2] = -@vel[2] / 2
 
     true
+
+  draw: =>
+    super!
+    color = if @attacking
+      {255,0, 0, 128}
+    else
+      {0,255, 0, 128}
+
+    COLOR\push color
+    size = 10
+    y = @y + (@h - size) / 2
+
+    if @facing == "right"
+      g.rectangle "fill", @x + @w - size, y, size, size
+    else
+      g.rectangle "fill", @x, y, 10, 10
+
+    COLOR\pop!
 
 class Ocean
   gravity_mag: 200
@@ -63,6 +96,10 @@ class Ocean
 
     @viewport\center_on @player
 
+  on_key: =>
+    if CONTROLLER\is_down "attack"
+      @player\attack @
+
   draw: =>
     @viewport\apply!
     COLOR\pusha 128
@@ -76,7 +113,6 @@ class Ocean
 
   gravity: (vec, dt) =>
     return unless @gravity_pull
-    print @gravity_pull
     vec\adjust unpack @gravity_pull * dt
 
   collides: (thing) =>
