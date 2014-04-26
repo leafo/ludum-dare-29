@@ -32,7 +32,6 @@ class Ocean
   mousepressed: (x,y) =>
     x, y = @viewport\unproject x, y
     dir = (Vec2d(x,y) - Vec2d(@enemy\center!))\normalized!
-    print dir
     @enemy\attack @player, ->
 
   on_key: =>

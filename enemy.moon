@@ -18,6 +18,7 @@ class Enemy extends Entity
   new: (...) =>
     super ...
     @seqs = DrawList!
+    @effects = EffectList!
 
     @seqs\add Sequence ->
       if @stunned
@@ -96,6 +97,9 @@ class Enemy extends Entity
     attack_force = 4000
 
     @seqs\add Sequence ->
+      await (fn) ->
+        @effects\add ShakeEffect 0.5, nil, nil, fn
+
       @move_accel = dir * attack_force
       wait 0.1
       @move_accel = false
@@ -109,6 +113,7 @@ class Enemy extends Entity
   update: (dt, world) =>
     @world = world
     @seqs\update dt
+    @effects\update dt
 
     ax, ay = 0,0
 
@@ -153,6 +158,8 @@ class Enemy extends Entity
       @stunned = false
 
   draw: =>
+    @effects\before!
+
     color = if @stunned
       {255,200,200}
     elseif @move_accel
@@ -164,6 +171,9 @@ class Enemy extends Entity
 
     if @slowing != 0
       g.print "Slowing #{@slowing}", @x, @y
+
+    @effects\after!
+
 
 
 { :Enemy }
