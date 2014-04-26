@@ -2,6 +2,19 @@
 
 import VList, HList, Label, Anchor from require "lovekit.ui"
 
+class HBar extends Box
+  p: 0.5
+  w: 200
+  h: 12
+  padding: 2
+
+  draw: =>
+    @outline!
+    COLOR\push {255, 100, 100, 128}
+    full_width = @w - @padding * 2
+    g.rectangle "fill", @x + @padding, @y + @padding,
+      full_width * @p, @h - @padding * 2
+    COLOR\pop!
 
 class Hud
   new: =>
@@ -9,7 +22,7 @@ class Hud
       yalign: "center"
 
       Label "Hello"
-      Box 0, 0, 10, 10
+      HBar!
       Label "World"
     }
 
@@ -19,7 +32,7 @@ class Hud
     @top_list\draw!
     g.pop!
 
-  update: (dt) =>
+  update: (dt, world) =>
     @top_list\update dt
 
 { :Hud }
