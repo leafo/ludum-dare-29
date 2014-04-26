@@ -6,6 +6,8 @@ import Hud from require "hud"
 import Player from require "player"
 import Enemy from require "enemy"
 
+import Ripple from require "shaders"
+
 class Ocean
   gravity_mag: 130
 
@@ -28,6 +30,8 @@ class Ocean
 
     @collide = UniformGrid!
 
+    @shader = Ripple!
+
   mousepressed: (x,y) =>
     x, y = @viewport\unproject x, y
     dir = (Vec2d(x,y) - Vec2d(@enemy\center!))\normalized!
@@ -36,19 +40,20 @@ class Ocean
   on_key: =>
 
   draw: =>
-    @viewport\apply!
-    COLOR\pusha 128
-    show_grid @viewport, 20, 20
-    COLOR\pop!
+    @shader\render ->
+      @viewport\apply!
+      COLOR\pusha 128
+      show_grid @viewport, 20, 20
+      COLOR\pop!
 
-    @bounds\draw {255,255,255,20}
+      @bounds\draw {255,255,255,20}
 
-    @entities\draw!
-    @particles\draw!
+      @entities\draw!
+      @particles\draw!
 
-    @hud\draw @viewport
+      @hud\draw @viewport
 
-    @viewport\pop!
+      @viewport\pop!
 
   gravity: (vec, dt) =>
     do return
