@@ -4,6 +4,8 @@ require "lovekit.all"
 
 class Player extends Entity
   speed: 200
+  max_speed: 1500
+
   w: 40
   h: 20
 
@@ -18,11 +20,30 @@ class Player extends Entity
     cx, cy
 
   update: (dt, world) =>
-    dx, dy = unpack CONTROLLER\movement_vector dt * @speed
-    if dx != 0
-      @facing = dx > 0 and "right" or "left"
+    @accel = CONTROLLER\movement_vector @speed * dt
+    decel = @speed * dt
 
-    @fit_move dx, dy, world
+    if @accel[1] != 0
+      @facing = @accel[1] > 0 and "right" or "left"
+
+    if @accel[1] == 0
+      -- not moving in x, shrink it
+      @vel[1] = dampen @vel[1], decel
+
+    if @accel[2] == 0
+      @vel[2] = dampen @vel[2], decel
+
+    @vel\adjust unpack @accel * dt * @speed
+    @vel\cap @max_speed
+
+    cx, cy = @fit_move @vel[1] * dt, @vel[2] * dt, world
+
+    if cx
+      @vel[1] = 0
+
+    if cy
+      @vel[2] = -@vel[2] / 2
+
     true
 
 class Ocean
@@ -30,7 +51,7 @@ class Ocean
     @viewport = Viewport scale: GAME_CONFIG.scale
     @entities = DrawList!
 
-    @bounds = Box 0,0, 100, 100
+    @bounds = Box 0,0, 1000, 1000
 
     @player = Player 20, 20
     @entities\add @player
