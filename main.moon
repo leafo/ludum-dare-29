@@ -19,13 +19,21 @@ class Ocean
 
     @player = Player 20, 20
     @entities\add @player
-    @entities\add Enemy 100, 100
-    @entities\add Enemy 160, 120
+
+    @enemy = Enemy 100, 100
+    @entities\add @enemy
+    -- @entities\add Enemy 160, 120
 
     @viewport\center_on @player
     @hud = Hud!
 
     @collide = UniformGrid!
+
+  mousepressed: (x,y) =>
+    x, y = @viewport\unproject x, y
+    dir = (Vec2d(x,y) - Vec2d(@enemy\center!))\normalized!
+    print dir
+    @enemy\move dir, ->
 
   on_key: =>
 
@@ -45,6 +53,7 @@ class Ocean
     @viewport\pop!
 
   gravity: (vec, dt) =>
+    do return
     return unless @gravity_pull
     vec\adjust unpack @gravity_pull * dt
 

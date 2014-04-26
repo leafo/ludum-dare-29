@@ -69,10 +69,16 @@ class Enemy extends Entity
       again!
 
   move: (dir, fn) =>
-    print "moving"
+    speed = 50
     @seqs\add Sequence ->
-      wait 1.0
-      @slowing -= 1
+      elapsed = 0
+      during 1, (dt) ->
+        return "cancel" if @stunned
+        elapsed += dt
+        ramp = math.min 1, elapsed / 0.5
+
+        @vel[1] = dir[1] * speed * ramp
+        @vel[2] = dir[2] * speed * ramp
       fn!
 
   charge: (dir, fn) =>
