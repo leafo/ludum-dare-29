@@ -6,7 +6,6 @@ import Hud from require "hud"
 
 class Enemy extends Entity
   is_enemy: true
-  speed: 20
   w: 40
   h: 20
 
@@ -57,7 +56,7 @@ class Enemy extends Entity
 
 class Player extends Entity
   is_player: true
-  speed: 20
+  speed: 200
   max_speed: 100
   facing: "right"
 
@@ -81,18 +80,19 @@ class Player extends Entity
   attack: (world) =>
     return if @stunned
     return if @attacking or @attacking_cooloff
-    attack_speed = 300
+    attack_force = 2500
 
     @attacking = @seqs\add Sequence ->
-      start = love.timer.getTime!
       @vel[1] = 0
 
-      force = attack_speed
+      force = attack_force
       force = -force if @facing == "left"
+
       @attack_accel = Vec2d force, 0
 
-      tween @attack_accel, 0.15, { 0, 0 }, lerp
-      tween @attack_accel, 0.05, { -force/2, 0 }, lerp
+      wait 0.2
+      @attack_accel = Vec2d -force/2, 0
+      wait 0.2
 
       @attacking = false
       @attacking_cooloff = true
@@ -103,7 +103,7 @@ class Player extends Entity
     @seqs\update dt, world
 
     @accel = CONTROLLER\movement_vector @speed
-    decel = @speed / 10
+    decel = @speed / 100
 
     if @attacking
       @accel[1] = @attack_accel[1]
@@ -125,7 +125,7 @@ class Player extends Entity
     if @accel\is_zero!
       world\gravity @vel, dt
 
-    @vel\adjust unpack @accel * dt * @speed
+    @vel\adjust unpack @accel * dt
     @vel\cap @max_speed unless @attacking
 
     cx, cy = @fit_move @vel[1] * dt, @vel[2] * dt, world
@@ -246,7 +246,6 @@ love.load = ->
   }
 
   g.setFont fonts.default
-
 
   g.setBackgroundColor 15,17, 18
 
