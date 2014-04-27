@@ -65,7 +65,7 @@ class Player extends Entity
 
     cx, cy
 
-  boost: (dir) =>
+  boost: (world, dir) =>
     return if @locked
     return if @stunned
     return if @boosting
@@ -74,11 +74,8 @@ class Player extends Entity
     AUDIO\play "boost"
     @boosting = @seqs\add Sequence ->
       @boost_emitter = world.particles\add BoostEmitter world, @tail_center!
+      @boost_accel = dir * boost_power
 
-      xx = dtl and -1 or (dtr and 1) or 0
-      yy = dtu and -1 or (dtd and 1) or 0
-
-      @boost_accel = Vec2d  xx * boost_power, yy * boost_power
       wait 0.1
       @boost_accel = false
       wait 0.3
@@ -153,7 +150,7 @@ class Player extends Entity
     if dtu or dtd or dtl or dtr
       xx = dtl and -1 or (dtr and 1) or 0
       yy = dtu and -1 or (dtd and 1) or 0
-      @boost Vec2d xx, yy
+      @boost world, Vec2d xx, yy
 
     if @attacking
       @accel[1] = @attack_accel[1]

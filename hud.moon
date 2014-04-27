@@ -79,6 +79,7 @@ class Radar extends Box
 
     for e in *@world.entities
       continue unless e.alive
+      continue unless e.center
 
       pushed = if e.is_enemy
         COLOR\push 255,100,100, 128

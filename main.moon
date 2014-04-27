@@ -14,7 +14,61 @@ import ParalaxBg from require "background"
 
 paused = false
 
+import RevealLabel, Anchor from require "lovekit.ui"
+
 local *
+
+class Intro extends Sequence
+  new: (@world, callback) =>
+    @entities = DrawList!
+
+    anchor = (label) ->
+      cx, cy = @world.viewport\center!
+      label.rate = 0.05
+      Anchor cx, cy, label, "center", "center"
+
+
+    intro = {
+      "There's something foul\n      in the ocean\n(press 'X' to continue)"
+      "The duty of a fish calls..."
+      "Arrows move, 'X' attacks\nDouble tap to boost"
+      "Go forth and rid the sea of evil"
+    }
+
+    super ->
+      @world.hud_alpha = 0
+      wait 1.0
+      AUDIO\play "intro_explosion"
+      @world.viewport\shake 2.0
+
+      wait 2.0
+
+      local current
+      for msg in *intro
+        if current
+          @entities\remove current
+          current = nil
+
+        await (fn) ->
+          current = anchor RevealLabel msg, 10, 10, fn
+          @entities\add current
+
+        wait_for_key unpack GAME_CONFIG.keys.confirm
+
+      @world.seqs\add Sequence ->
+        tween @world, 1.0, hud_alpha: 255
+
+      callback!
+
+  update: (dt) =>
+    if CONTROLLER\is_down "cancel"
+      dt *= 2
+
+    @entities\update dt
+    super dt
+
+  draw: (...) =>
+    @entities\draw ...
 
 class Transport extends Box
   touching_player: 0
@@ -23,7 +77,6 @@ class Transport extends Box
   message: "Press 'C' to exit"
 
   is_active: =>
-    do return true
     @touching_player > 0
 
   enter: (world) =>
@@ -53,6 +106,7 @@ class World
   gravity_mag: 130
   spawn_x: 300
   spawn_y: 300
+  hud_alpha: 255
 
   new: (@game) =>
     @player = @game.player
@@ -66,12 +120,6 @@ class World
 
     @player.x, @player.y = @spawn_x, @spawn_y
     @entities\add @player
-
-    -- @entities\add Guppy 100, 100
-    -- @entities\add Shark 160, 120
-    -- @entities\add Jelly 120, 180
-    @entities\add Snake 180, 180
-    -- @entities\add Sardine 80, 200
 
     @entities\add @exit if @exit
 
@@ -116,7 +164,11 @@ class World
       @viewport\pop!
 
     @viewport\apply!
+
+    COLOR\pusha @hud_alpha
     @hud\draw @viewport
+    COLOR\pop!
+
     @viewport\pop!
 
   gravity: (vec, dt) =>
@@ -148,6 +200,7 @@ class World
 
     for e in *@entities
       continue unless e.alive
+      continue unless e.w -- is boxy
       @collide\add e
 
     for e in *@collide\get_touching @player
@@ -220,7 +273,14 @@ class Home extends World
 
     super ...
 
+    if @game.show_intro
+      @player.locked = true
+      @entities\add Intro @, ->
+        @player.locked = false
+
 class Game
+  show_intro: true
+
   @start: =>
     game = Game!
     Home game
@@ -255,7 +315,11 @@ love.load = ->
     "start"
     "player_die"
     "boost"
+    "intro_explosion"
   }
+
+  AUDIO.play_music = =>
+    @music = setmetatable {}, __index: -> ->
 
   export CONTROLLER = Controller GAME_CONFIG.keys
   export DISPATCHER = Dispatcher Title Game\start!
