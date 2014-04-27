@@ -51,7 +51,7 @@ class MessageBox
 
 class HBar extends Box
   p: 0.5
-  w: 150
+  w: 100
   h: 12
   padding: 2
 
@@ -102,8 +102,9 @@ class Radar extends Box
 class Hud
   margin: 10
 
-  new: =>
+  new: (world) =>
     @entities = DrawList!
+    @display_score = world.game.score
 
     @health_bar = HBar!
 
@@ -118,20 +119,11 @@ class Hud
         yalign: "center"
         Label "HP:"
         @health_bar
+
+        Label -> "Score: #{math.floor @display_score}"
       }
 
       Label -> tostring love.timer.getFPS!
-
-      -- Label ->
-      --   return "" unless @world
-      --   player = @world.player
-
-      --   "Speed: #{nice player.vel\len!}, Vel: #{nice player.vel[1]},  #{nice player.vel[2]}"
-      -- Label ->
-      --   return "" unless @world
-      --   player = @world.player
-      --   return "" unless player.accel
-      --   "Accel: #{nice player.accel[1]},  #{nice player.accel[2]}"
     }
 
 
@@ -156,6 +148,8 @@ class Hud
     p = world.player
     @health_bar.p = smooth_approach @health_bar.p, p.health / p.__class.health, dt
     @radar.x = world.viewport.w - @margin
+
+    @display_score = smooth_approach @display_score, @world.game.score, dt * 2
 
     @entities\update dt, world
 

@@ -5,6 +5,8 @@ import BubbleEmitter, BloodEmitter from require "particles"
 import FadeAway from require "misc"
 
 class Enemy extends Entity
+  score: 1
+
   is_enemy: true
   w: 40
   h: 20
@@ -125,6 +127,7 @@ class Enemy extends Entity
     @health -= 1
 
     if @health <= 0
+      world.game.score += @score
       AUDIO\play "enemy_die"
     else
       AUDIO\play "hit2"
@@ -177,6 +180,8 @@ class Enemy extends Entity
       @mouth_emitter.x, @mouth_emitter.y = @mouth_box\center!
 
 class Guppy extends Enemy
+  score: 6
+
   w: 20
   h: 10
 
@@ -229,6 +234,7 @@ class Guppy extends Enemy
 
 class Shark extends Enemy
   lazy sprite: -> Spriter "images/enemy2.png", 50, 30
+  score: 11
 
   w: 25
   h: 10
@@ -319,6 +325,8 @@ class Shark extends Enemy
       again!
 
 class Jelly extends Enemy
+  score: 4
+
   w: 15
   h: 15
 
@@ -375,6 +383,7 @@ class Jelly extends Enemy
 
 class Snake extends Enemy
   lazy sprite: -> Spriter "images/enemy4.png", 50, 30
+  score: 4
 
   w: 30
   h: 8

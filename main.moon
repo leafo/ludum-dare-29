@@ -76,7 +76,7 @@ class World
     @entities\add @exit if @exit
 
     @viewport\center_on @player
-    @hud = Hud!
+    @hud = Hud @
 
     @collide = UniformGrid!
 
@@ -226,6 +226,7 @@ class Game
     Home game
 
   new: =>
+    @score = 0
     @player = Player 0, 0
 
 load_font = (img, chars)->
