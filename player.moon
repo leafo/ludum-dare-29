@@ -17,6 +17,7 @@ class Player extends Entity
   speed: 200
   max_speed: 100
   facing: "right"
+  locked: false
 
   health: 100
 
@@ -64,7 +65,27 @@ class Player extends Entity
 
     cx, cy
 
+  boost: (dir) =>
+    return if @locked
+    return if @stunned
+    return if @boosting
+
+    boost_power = 1000
+    AUDIO\play "boost"
+    @boosting = @seqs\add Sequence ->
+      @boost_emitter = world.particles\add BoostEmitter world, @tail_center!
+
+      xx = dtl and -1 or (dtr and 1) or 0
+      yy = dtu and -1 or (dtd and 1) or 0
+
+      @boost_accel = Vec2d  xx * boost_power, yy * boost_power
+      wait 0.1
+      @boost_accel = false
+      wait 0.3
+      @boosting = false
+
   attack: (world) =>
+    return if @locked
     return if @stunned
     return if @attacking or @attacking_cooloff
     attack_force = 2500
@@ -123,24 +144,16 @@ class Player extends Entity
     @effects\update dt, world
 
     @accel = CONTROLLER\movement_vector @speed
+    @accel = Vec2d! if @locked
+
     decel = @speed / 100
 
     dtu, dtd, dtl, dtr = CONTROLLER\double_tapped "up", "down", "left", "right"
 
-    if (dtu or dtd or dtl or dtr) and not @boosting
-      boost_power = 1000
-      AUDIO\play "boost"
-      @boosting = @seqs\add Sequence ->
-        @boost_emitter = world.particles\add BoostEmitter world, @tail_center!
-
-        xx = dtl and -1 or (dtr and 1) or 0
-        yy = dtu and -1 or (dtd and 1) or 0
-
-        @boost_accel = Vec2d  xx * boost_power, yy * boost_power
-        wait 0.1
-        @boost_accel = false
-        wait 0.3
-        @boosting = false
+    if dtu or dtd or dtl or dtr
+      xx = dtl and -1 or (dtr and 1) or 0
+      yy = dtu and -1 or (dtd and 1) or 0
+      @boost Vec2d xx, yy
 
     if @attacking
       @accel[1] = @attack_accel[1]

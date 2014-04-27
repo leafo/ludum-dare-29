@@ -13,6 +13,7 @@ insert defines, "love"
 insert defines, "CONTROLLER"
 insert defines, "DISPATCHER"
 insert defines, "GAME_CONFIG"
+insert defines, "AUDIO"
 
 {
   whitelist_globals: {
