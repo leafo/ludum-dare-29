@@ -4,16 +4,21 @@
   <image source="../images/tiles.png" width="256" height="256"/>
  </tileset>
  <layer name="Tile Layer 1" width="40" height="30">
+  <properties>
+   <property name="solid" value="true"/>
+  </properties>
   <data encoding="base64" compression="zlib">
-   eJztlEEOhCAMRfEOjBfxCG48grMf738FdUHSmMJ8WlsxocmL0Qh9lMIQQhhAxop/OSShyXdlETpY+Fm4IH5eedFo2e0Mbf9aR8u1+4Y2akc9OKYHnGruitnZ7V+97rrbvdy89lfi5rG/ySsefISO1m50j0oeuTVYBbdHSJ95+NF+Q+pXWoOVV039Tn4HG/N9NfJCcqOk8RszFzd3Lp/mnKJEkide3kvj0HOqpRRv9kPPgZbUW/SJ9rf2HHTyePWnFK/+1ND7s5PYAZBzFaw=
+   eJztlFEOgjAMhssdphfxCL7gDeBd7n8FMWHJspSua+lvTNbki0Fl+1j/MhHRpOTe8V8OS3n2q5mNDhF+ES4av5n57QFy4Uo6k/z9Ey3FOHD5fRG2l1yh89RTK/lmP8KD4xf573lXoPPfOq+r3u0oN1R/LW6I/mavtHMzOka7lT2SPM6eIaq4HmlyhvAr86Y5P+kZtp0lwKvn/L68D5eIHLbms7W3hu2gXotb+2w/z5xqScU+qbqW7tPOqRep/tlPOwdecrbKT22+r5iDAQ8qn1ZQ+fQw8jnIfAALnRa8
   </data>
  </layer>
  <layer name="Tile Layer 2" width="40" height="30">
   <data encoding="base64" compression="zlib">
-   eJztll0OgjAQhLm7BvUZInoBvIEcAAIHkOh1nIcS1035CSwskP2SSTZpUzZDO20QyJBCD6G1xhBCJ1eXUMXGn1C2aEf/XKHE1W/oo9AD9WiNUI/WhPm2b+z//sihYqFvjeEF1dpNMLTvvj6m3H0H6CjYizQRFGs30cGc/knklrR/Z+jiap5bvnfZVPjZ8/lN59yge8tac7zL+Nnz+c3nSPrU+EH3ypCM78o0SZ8aP+heGZLx2u/5PWe+YRjGFvgCKUo4vQ==
+   eJztlm8KwjAMxXd3xT+fHU4voDeYB1DcARx6Hd+HFkJIx0azmEl/8KBsZTxes6RVpcMFuip9K5cn1LFnLXQz9LCC1mG9gbbk3Rv6GHqJUB8HqA7rI9T8wA/Hiw8OP7/IHXoYe5FI5faCemMvSyR1vl6w/C+81HQKjzXtafZJ5Mw+Osc8QueYR+bMT6Nv0fw06ngH7cOa9y3pXjYFqY65ZylvuucEnRPfn+Nexj1L9cr35OZEiXnQWhnT44dqQTOnmAetlTE93vo+z/nnnl8oFApL4AsgT0DT
   </data>
  </layer>
  <objectgroup name="objects" width="40" height="30">
   <object name="spawn" x="137" y="148"/>
+  <object name="exit" x="490" y="3" width="102" height="87"/>
+  <object name="rest" x="20" y="40" width="299" height="259"/>
  </objectgroup>
 </map>
