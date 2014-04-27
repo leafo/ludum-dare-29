@@ -8,9 +8,14 @@ class Spawner extends Box
   new: (@world) =>
     @area = world.map_box\shrink @radius
 
+  position: =>
+    with spawn_area = Box 0,0, @radius, @radius
+      spawn_area\move_center @area\random_point!
+
   spawn: (num=1) =>
-    spawn_area = Box 0,0, @radius, @radius
-    spawn_area\move_center @area\random_point!
+    spawn_area = @position!
+    while spawn_area\touches_box @world.exit
+      spawn_area = @position!
 
     for i=1,num
       @world.entities\add @create_enemy spawn_area\random_point!
