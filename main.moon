@@ -130,18 +130,21 @@ class World
     @particles = DrawList!
     @seqs = DrawList!
 
-    @player.x, @player.y = @spawn_x, @spawn_y
-    @entities\add @player
+    @set_player_pos!
 
+    @entities\add @player
     @entities\add @exit if @exit
     @entities\add @rest if @rest
 
-    @viewport\center_on @player
     @hud = Hud @
 
     @collide = UniformGrid!
 
     @shader = Ripple @viewport
+
+  set_player_pos: (x=@spawn_x, y=@spawn_y) =>
+    @player.x, @player.y = x, y
+    @viewport\center_on @player
 
   on_show: =>
     return if @game.show_intro
@@ -261,7 +264,11 @@ class Ocean extends World
     @exit = Transport 0, @map_box.h - 100, 100, 100
     @exit.activate = ->
       @entities\remove @player
-      DISPATCHER\replace Home @game
+      home = Home @game
+      home.can_rest = true
+
+      DISPATCHER\replace home
+      home\set_player_pos home.exit\center!
 
     @spawn_x, @spawn_y = @exit\center!
 
@@ -302,7 +309,7 @@ class Home extends World
         @player.locked = false
 
 class Game
-  show_intro: true
+  show_intro: false -- true
 
   @start: =>
     game = Game!
