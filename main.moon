@@ -96,16 +96,23 @@ class Zone extends Box
   take_hit: (player, world) =>
     @touching_player = 2
 
-    if @message
-      unless @message_box
-        @message_box = MessageBox @message
-        world.hud\show_message_box @message_box
+    if @is_ready! and @message and not @message_box
+      @message_box = MessageBox @message
+      world.hud\show_message_box @message_box
 
   draw: =>
     Box.outline @
 
 class Transport extends Zone
   message: "Press 'C' to exit"
+
+class RestZone extends Zone
+  message: "Press 'C' to rest"
+  new: (@world, ...) =>
+    super ...
+
+  is_ready: =>
+    super! and @world.can_rest
 
 class World
   gravity_mag: 130
@@ -264,6 +271,8 @@ class Ocean extends World
       level @
 
 class Home extends World
+  can_rest: false
+
   new: (...) =>
     @map = TileMap.from_tiled "maps/home", {
       object: (o) ->
@@ -272,8 +281,7 @@ class Home extends World
             @spawn_x = o.x
             @spawn_y = o.y
           when "rest"
-            @rest = Zone o.x, o.y, o.width, o.height
-            @rest.message = "Press 'C' to rest"
+            @rest = RestZone @, o.x, o.y, o.width, o.height
           when "exit"
             @exit = Transport o.x, o.y, o.width, o.height
             @exit.message = "Press 'C' to enter the sea"
@@ -286,6 +294,7 @@ class Home extends World
 
     super ...
 
+    do return
     if @game.show_intro
       @player.locked = true
       @entities\add Intro @, ->
