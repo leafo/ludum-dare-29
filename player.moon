@@ -4,6 +4,14 @@
 import BubbleEmitter, BloodEmitter from require "particles"
 import FadeAway from require "misc"
 
+class BoostEmitter extends BubbleEmitter
+  count: 5
+  duration: 0.5
+
+  spread_x: 5
+  spread_y: 1
+
+
 class Player extends Entity
   is_player: true
   speed: 200
@@ -82,6 +90,16 @@ class Player extends Entity
       wait 0.5
       @attacking_cooloff = false
 
+  tail_center: =>
+    x,y = @center!
+    if @facing == "left"
+      x += @w/2
+
+    if @facing == "right"
+      x -= @w/2
+
+    x,y
+
   update_mouth: =>
     @mouth_box or= Box @x, @y, 10, 10
     @mouth_box.y = @y + (@h - @mouth_box.w) / 2
@@ -92,6 +110,9 @@ class Player extends Entity
 
     if @mouth_emitter
       @mouth_emitter.x, @mouth_emitter.y = @mouth_box\center!
+
+    if @boost_emitter
+      @boost_emitter.x, @boost_emitter.y = @tail_center!
 
   update: (dt, world) =>
     @strafing = CONTROLLER\is_down "attack"
@@ -110,6 +131,8 @@ class Player extends Entity
       boost_power = 1000
       AUDIO\play "boost"
       @boosting = @seqs\add Sequence ->
+        @boost_emitter = world.particles\add BoostEmitter world, @tail_center!
+
         xx = dtl and -1 or (dtr and 1) or 0
         yy = dtu and -1 or (dtd and 1) or 0
 
