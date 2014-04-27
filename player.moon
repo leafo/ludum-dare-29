@@ -98,20 +98,20 @@ class Player extends Entity
 
     dtu, dtd, dtl, dtr = CONTROLLER\double_tapped "up", "down", "left", "right"
 
-    if (dtu or dtd or dtl or dtr) and not @boost_seq
+    if (dtu or dtd or dtl or dtr) and not @boosting
       print dtu, dtd, dtl, dtr
       boost_power = 1500
-      @boost_seq = @seqs\add Sequence ->
+      @boosting = @seqs\add Sequence ->
         xx = dtl and -1 or (dtr and 1) or 0
         yy = dtu and -1 or (dtd and 1) or 0
 
         print "boosting", xx, yy
 
         @boost_accel = Vec2d  xx * boost_power, yy * boost_power
-        wait 0.15
+        wait 0.1
         @boost_accel = false
         wait 0.3
-        @boost_seq = false
+        @boosting = false
 
     if @attacking
       @accel[1] = @attack_accel[1]
@@ -137,7 +137,8 @@ class Player extends Entity
       world\gravity @vel, dt
 
     @vel\adjust unpack @accel * dt
-    @vel\cap @max_speed unless @attacking
+    unless @attacking or @boosting
+      @vel\cap @max_speed
 
     cx, cy = @fit_move @vel[1] * dt, @vel[2] * dt, world
 
