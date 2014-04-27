@@ -81,6 +81,9 @@ class Radar extends Box
       pushed = if e.is_enemy
         COLOR\push 255,100,100, 128
         true
+      elseif e.is_transport
+        COLOR\push 100,255,100, 128
+        true
 
       g.point e\center!
 
@@ -92,6 +95,7 @@ class Radar extends Box
   update: (dt, @world) =>
     r = @world.map_box.w / @world.map_box.h
     @h = @w / r
+    true
 
 class Hud
   margin: 10
@@ -116,16 +120,16 @@ class Hud
 
       Label -> tostring love.timer.getFPS!
 
-      Label ->
-        return "" unless @world
-        player = @world.player
+      -- Label ->
+      --   return "" unless @world
+      --   player = @world.player
 
-        "Speed: #{nice player.vel\len!}, Vel: #{nice player.vel[1]},  #{nice player.vel[2]}"
-      Label ->
-        return "" unless @world
-        player = @world.player
-        return "" unless player.accel
-        "Accel: #{nice player.accel[1]},  #{nice player.accel[2]}"
+      --   "Speed: #{nice player.vel\len!}, Vel: #{nice player.vel[1]},  #{nice player.vel[2]}"
+      -- Label ->
+      --   return "" unless @world
+      --   player = @world.player
+      --   return "" unless player.accel
+      --   "Accel: #{nice player.accel[1]},  #{nice player.accel[2]}"
     }
 
 
@@ -140,13 +144,13 @@ class Hud
     @entities\add mbox
 
   draw: (v) =>
+    return unless @world
     g.push!
     g.translate v.x, v.y
     @entities\draw v
     g.pop!
 
-  update: (dt, world) =>
-    @world = world
+  update: (dt, @world) =>
     p = world.player
     @health_bar.p = smooth_approach @health_bar.p, p.health / p.max_health, dt
     @radar.x = world.viewport.w - @margin

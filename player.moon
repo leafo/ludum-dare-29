@@ -43,6 +43,8 @@ class Player extends Entity
         }, 0.4
       }
 
+    @update_mouth!
+
   looking_at: (viewport) =>
     cx, cy = @center!
     switch @facing
