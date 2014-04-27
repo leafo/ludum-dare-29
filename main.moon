@@ -1,5 +1,5 @@
 require "lovekit.all"
-require "lovekit.reloader"
+-- require "lovekit.reloader"
 
 {graphics: g} = love
 
@@ -244,7 +244,17 @@ love.load = ->
   import Title, GameOver from require "screens"
 
   export AUDIO = Audio "sounds"
-  AUDIO\preload { }
+  AUDIO\preload {
+    "bump_wall"
+    "charge"
+    "enemy_die"
+    "hit1"
+    "hit2"
+    "recover"
+    "start"
+    "player_die"
+    "boost"
+  }
 
   export CONTROLLER = Controller GAME_CONFIG.keys
   export DISPATCHER = Dispatcher Title Game\start!

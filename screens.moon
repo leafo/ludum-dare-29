@@ -2,6 +2,10 @@
 import Ripple from require "shaders"
 import Anchor, RevealLabel from require "lovekit.ui"
 
+class Transition extends FadeTransition
+  time: 1.5
+  color: {10, 10, 10}
+
 class Title
   lazy background: -> imgfy "images/title.png"
 
@@ -33,7 +37,8 @@ class Title
 
   on_key: =>
     if CONTROLLER\is_down "confirm"
-      DISPATCHER\replace @start
+      AUDIO\play "start"
+      DISPATCHER\replace @start, Transition
 
 
 class GameOver

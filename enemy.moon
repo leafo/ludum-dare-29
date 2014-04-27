@@ -124,6 +124,11 @@ class Enemy extends Entity
 
     @health -= 1
 
+    if @health <= 0
+      AUDIO\play "enemy_die"
+    else
+      AUDIO\play "hit2"
+
     @stunned = @seqs\add Sequence ->
       dir = p.mouth_box\vector_to(@)\normalized!
       @stun_accel = dir\normalized! * power

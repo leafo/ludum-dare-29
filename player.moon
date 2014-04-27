@@ -63,6 +63,7 @@ class Player extends Entity
 
     @mouth_emitter = BubbleEmitter world, @mouth_box\center!
     world.particles\add @mouth_emitter
+    AUDIO\play "charge"
 
     @attacking = @seqs\add Sequence ->
       @vel[1] = 0
@@ -106,13 +107,11 @@ class Player extends Entity
     dtu, dtd, dtl, dtr = CONTROLLER\double_tapped "up", "down", "left", "right"
 
     if (dtu or dtd or dtl or dtr) and not @boosting
-      print dtu, dtd, dtl, dtr
       boost_power = 1000
+      AUDIO\play "boost"
       @boosting = @seqs\add Sequence ->
         xx = dtl and -1 or (dtr and 1) or 0
         yy = dtu and -1 or (dtd and 1) or 0
-
-        print "boosting", xx, yy
 
         @boost_accel = Vec2d  xx * boost_power, yy * boost_power
         wait 0.1
@@ -149,6 +148,12 @@ class Player extends Entity
 
     cx, cy = @fit_move @vel[1] * dt, @vel[2] * dt, world
 
+    if (cx or cy) and not @hit_audio
+      @hit_audio = @seqs\add Sequence ->
+        AUDIO\play "bump_wall"
+        wait 0.2
+        @hit_audio = nil
+
     if cx
       @vel[1] = 0
 
@@ -169,6 +174,8 @@ class Player extends Entity
     unless alive
       world.particles\add BloodEmitter world, @center!
       world.particles\add FadeAway @
+      AUDIO\play "player_die"
+
       world.particles\add Sequence ->
         import GameOver from require "screens"
         wait 1.0
@@ -208,6 +215,7 @@ class Player extends Entity
     knockback = 2000
     world.viewport\shake nil, nil, 2
     @effects\add FlashEffect!
+    AUDIO\play "hit1"
 
     @stunned = @seqs\add Sequence ->
       @health = math.max 0, @health - 15
