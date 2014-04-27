@@ -12,12 +12,24 @@ class Player extends Entity
   health: 100
   max_health: 100
 
+  lazy sprite: -> Spriter "images/sprite.png", 40, 20
+
   w: 40
   h: 20
 
   new: (...) =>
     super ...
     @seqs = DrawList!
+
+    with @sprite
+      @anim = StateAnim "right", {
+        left: \seq {
+          "40,20,40,20"
+        }, 0.3, true
+        right: \seq {
+          "40,20,40,20"
+        }, 0.3
+      }
 
   looking_at: (viewport) =>
     cx, cy = @center!
@@ -121,11 +133,14 @@ class Player extends Entity
       @vel[2] = -@vel[2] / 2
 
     @update_mouth!
-
+    @anim\set_state @facing
+    @anim\update dt
     true
 
   draw: =>
-    super!
+    -- super!
+    @anim\draw @x, @y
+
     color = if @attacking
       {255,0, 0, 128}
     elseif @stunned
