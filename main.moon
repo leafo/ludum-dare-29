@@ -173,6 +173,8 @@ class Ocean extends World
     =>
       SardineSpawner(@)\spawn 10
 
+    =>
+      SardineSpawner(@)\spawn 10
   }
 
   new: (...) =>
@@ -232,9 +234,12 @@ love.load = ->
 
   g.setBackgroundColor 12,14, 15
 
-  export CONTROLLER = Controller GAME_CONFIG.keys
+  import Title, GameOver from require "screens"
 
-  export DISPATCHER = Dispatcher Game\start!
+  export CONTROLLER = Controller GAME_CONFIG.keys
+  export DISPATCHER = Dispatcher GameOver!-- Title Game\start!
+
   DISPATCHER.default_transition = FadeTransition
   DISPATCHER\bind love
 
+{ :Game, :Home, :Ocean }

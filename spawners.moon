@@ -24,8 +24,20 @@ class Spawner extends Box
     error "override create_enemy #{@@.__name}"
 
 class SardineSpawner extends Spawner
-  create_enemy: (x,y) =>
-    print "Creating sardine..."
-    Sardine x, y
+  create_enemy: (x,y) => Sardine x, y
 
-{ :Spawner, :SardineSpawner }
+class JellySpawner extends Spawner
+  create_enemy: (x,y) => Jelly x, y
+
+class GuppySpawner extends Spawner
+  create_enemy: (x,y) => Snake x, y
+
+class SnakeSpawner extends Spawner
+  create_enemy: (x,y) => Snake x, y
+
+class SharkSpawner extends Spawner
+  create_enemy: (x,y) => Shark x, y
+
+
+{ :Spawner, :SardineSpawner, :JellySpawner, :GuppySpawner, :SnakeSpawner,
+  SharkSpawner }
