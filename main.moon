@@ -27,7 +27,6 @@ class Intro extends Sequence
       label.rate = 0.05
       Anchor cx, cy, label, "center", "center"
 
-
     intro = {
       "There's something foul\n      in the ocean\n(press 'X' to continue)"
       "The duty of a fish calls..."
@@ -37,7 +36,9 @@ class Intro extends Sequence
 
     super ->
       @world.hud_alpha = 0
-      wait 1.0
+      @world.seqs\add AUDIO\fade_music 0.75
+
+      wait 2.0
       AUDIO\play "intro_explosion"
       @world.viewport\shake 2.0
 
@@ -288,6 +289,7 @@ class Home extends World
     if @game.show_intro
       @player.locked = true
       @entities\add Intro @, ->
+        @start_music!
         @player.locked = false
 
 class Game
