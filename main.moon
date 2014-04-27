@@ -3,7 +3,7 @@ require "lovekit.reloader"
 
 {graphics: g} = love
 
-import Hud from require "hud"
+import Hud, MessageBox from require "hud"
 import Player from require "player"
 import Guppy, Shark, Jelly, Snake, Sardine from require "enemy"
 
@@ -12,6 +12,34 @@ import Ripple from require "shaders"
 import ParalaxBg from require "background"
 
 paused = false
+
+class Transport extends Box
+  touching_player: 0
+  is_transport: true
+
+  message: "Press 'X' to exit"
+
+  is_active: =>
+    @touching_player > 0
+
+  update: (dt, world) =>
+    if @touching_player > 0
+      @touching_player -= 1
+
+    if @touching_player == 0 and @message_box
+      @message_box\hide!
+      @message_box = nil
+
+    true
+
+  take_hit: (player, world) =>
+    @touching_player = 2
+
+    unless @message_box
+      @message_box = MessageBox @message
+      world.hud\show_message_box @message_box
+
+  draw: =>
 
 -- wide open
 class OceanMap extends Box
@@ -51,6 +79,9 @@ class Ocean
     @entities\add Snake 180, 180
     -- @entities\add Sardine 80, 200
 
+    if @exit
+      @entities\add @exit
+
     @viewport\center_on @player
     @hud = Hud!
 
@@ -79,7 +110,7 @@ class Ocean
       if @map
         @map\draw @viewport
 
-      COLOR\pusha 128
+      COLOR\pusha 64
       show_grid @viewport, 20, 20
       COLOR\pop!
 
@@ -100,7 +131,7 @@ class Ocean
 
   collides: (thing) =>
     if @map
-      @map\collides thing
+      @map\collides(thing) or not @map_box\contains_box thing
 
   update: (dt) =>
     return if paused
@@ -123,7 +154,7 @@ class Ocean
       @collide\add e
 
     for e in *@collide\get_touching @player
-      continue unless e.is_enemy
+      continue unless e.take_hit
       continue if e.stunned
       @player\take_hit e, @
 
@@ -135,6 +166,8 @@ class Home extends Ocean
           when "spawn"
             @spawn_x = o.x
             @spawn_y = o.y
+          when "exit"
+            @exit = Transport o.x, o.y, o.width, o.height
     }
 
     @map_box = @map\to_box!
@@ -152,7 +185,7 @@ love.load = ->
 
   g.setFont fonts.default
 
-  g.setBackgroundColor 15,17, 18
+  g.setBackgroundColor 12,14, 15
 
   export CONTROLLER = Controller GAME_CONFIG.keys
   export DISPATCHER = Dispatcher Home!

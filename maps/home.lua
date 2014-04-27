@@ -130,6 +130,17 @@ return {
           height = 0,
           visible = true,
           properties = {}
+        },
+        {
+          name = "exit",
+          type = "",
+          shape = "rectangle",
+          x = 490,
+          y = 3,
+          width = 102,
+          height = 87,
+          visible = true,
+          properties = {}
         }
       }
     }

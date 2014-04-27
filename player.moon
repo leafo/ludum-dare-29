@@ -178,6 +178,10 @@ class Player extends Entity
     COLOR\pop!
 
   take_hit: (enemy, world) =>
+    if enemy.is_transport
+      enemy\take_hit @, world
+      return
+
     if @attacking
       if @mouth_box\touches_box enemy
         enemy\take_hit @, world
