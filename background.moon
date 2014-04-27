@@ -5,7 +5,7 @@ class ParalaxBg
   speed: 1
   lazy sprite: -> imgfy "images/ground.png"
 
-  new: (@viewport) =>
+  new: =>
     @sprite\set_wrap "repeat", "clamp"
 
     @base_offsets = setmetatable {}, __index: (key) =>
@@ -15,9 +15,9 @@ class ParalaxBg
 
   update: (dt) =>
 
-  draw: =>
+  draw: (viewport) =>
     w,h = @sprite\width!, @sprite\height!
-    vw = @viewport.w
+    vw = viewport.w
 
     for l=@layers,1,-1
       t = (@layers - (l - 1)) / @layers
@@ -31,11 +31,11 @@ class ParalaxBg
       q = g.newQuad 0, 0, w * times, h, w, h
 
       g.push!
-      g.translate @viewport.x, @viewport.y + @viewport.h
+      g.translate viewport.x, viewport.y + viewport.h
       
       px = -(l - 1) / @layers + 1
 
-      g.translate -((@base_offsets[l] + @viewport.x) * px % real_w), (l - 1) * -10
+      g.translate -((@base_offsets[l] + viewport.x) * px % real_w), (l - 1) * -10
 
       g.scale scale, scale
 

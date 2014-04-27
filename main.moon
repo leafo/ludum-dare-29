@@ -12,6 +12,25 @@ import ParalaxBg from require "background"
 
 paused = false
 
+-- wide open
+class OceanMap extends Box
+  x: 0
+  y: 0
+
+  w: 1000
+  h: 400
+
+  new: (world) =>
+    @bg = ParalaxBg!
+
+  draw: (viewport) =>
+    @bg\draw viewport
+
+  update: (dt) =>
+
+  collides: (thing) =>
+    not @contains_box thing
+
 class Ocean
   gravity_mag: 130
   spawn_x: 300
@@ -21,8 +40,6 @@ class Ocean
     @viewport = EffectViewport scale: GAME_CONFIG.scale
     @entities = DrawList!
     @particles = DrawList!
-
-    @bg = ParalaxBg @viewport
 
     @player = Player @spawn_x, @spawn_y
     @entities\add @player
@@ -37,6 +54,10 @@ class Ocean
     @collide = UniformGrid!
 
     @shader = Ripple @viewport
+
+    unless @map
+      @map = OceanMap @
+      @map_box = @map
 
   mousepressed: (x,y) =>
     x, y = @viewport\unproject x, y
@@ -53,8 +74,6 @@ class Ocean
 
       if @map
         @map\draw @viewport
-
-      @bg\draw!
 
       COLOR\pusha 128
       show_grid @viewport, 20, 20
@@ -87,7 +106,6 @@ class Ocean
     @gravity_pull = Vec2d.from_angle(90 + math.sin(@_t * 2) * 7) * @gravity_mag
 
     @hud\update dt, @
-    @bg\update dt, @
 
     @viewport\update dt
     @viewport\center_on @player, @map_box, dt
@@ -104,7 +122,6 @@ class Ocean
       continue unless e.is_enemy
       continue if e.stunned
       @player\take_hit e, @
-
 
 class Home extends Ocean
   new: =>
