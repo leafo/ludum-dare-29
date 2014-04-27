@@ -42,12 +42,12 @@ class Title
 
 
 class GameOver
-  new: (@start) =>
+  new: (game) =>
     @viewport = Viewport scale: GAME_CONFIG.scale
     @shader = Ripple @viewport
     @entities = DrawList!
 
-    l = RevealLabel "You have become fish fodder\nPress 'X' to return to title\nThanks for playing!"
+    l = RevealLabel "You have become fish fodder\nPress 'X' to return to title\nThanks for playing!\nYour score: #{game.score}"
 
     cx, cy = @viewport\center!
     @entities\add Anchor cx, cy - 20, l, "center", "center"

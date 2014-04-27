@@ -202,7 +202,7 @@ class Player extends Entity
       world.particles\add Sequence ->
         import GameOver from require "screens"
         wait 1.0
-        DISPATCHER\replace GameOver!
+        DISPATCHER\replace GameOver world.game
 
     alive
 
