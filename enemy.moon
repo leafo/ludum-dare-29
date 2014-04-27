@@ -26,68 +26,7 @@ class Enemy extends Entity
     @seqs\add @make_ai!
 
   make_ai: =>
-    Sequence ->
-      if @stunned
-        wait_until -> not @stunned
-
-      toward_player = @vector_to @world.player
-      dist_to_player = toward_player\len!
-      left_of_player = toward_player[1] > 0
-
-      move, attack = switch @threat
-        when 0
-          100, 1
-        when 1
-          4, 1
-        else
-          1, 2
-
-      if @just_hit
-        attack = 10*attack
-        @just_hit = false
-
-      switch pick_dist { :move, :attack }
-        when "move"
-          dir = if dist_to_player < 150
-            pick_dist {
-              left: 1 + (left_of_player and 1 or 0)
-              right: 1 + (left_of_player and 0 or 1)
-              player: 3
-            }
-          else
-            pick_dist {
-              left: 3
-              right: 3
-              player: 2
-            }
-
-          dir = switch dir
-            when "left"
-              Vec2d -1, 0
-            when "right"
-              Vec2d 1, 0
-            when "player"
-              (toward_player)\normalized!
-
-          move, charge = switch @threat
-            when 0
-              3,1
-            when 1
-              1,1
-            else
-              1,3
-
-          switch pick_dist { :move, :charge }
-            when "charge"
-              await @\charge, dir
-            when "move"
-              await @\move, dir
-        when "attack"
-          await @\attack, @world.player
-
-      wait 0.5
-      again!
-
+    error "implement ai for enemy #{@@__name}"
 
   move: (dir, fn) =>
     speed = 250
@@ -249,6 +188,20 @@ class Guppy extends Enemy
         }, 0.4, true
       }
 
+  make_ai: =>
+    Sequence ->
+      if @stunned
+        wait_until -> not @stunned
+
+      toward_player = @vector_to @world.player
+      dist_to_player = toward_player\len!
+      left_of_player = toward_player[1] > 0
+
+      wait 1.0
+
+
+
+
 class Shark extends Enemy
   lazy sprite: -> Spriter "images/enemy2.png", 50, 30
 
@@ -275,6 +228,69 @@ class Shark extends Enemy
         }, 0.4
       }
 
+  make_ai: =>
+    Sequence ->
+      if @stunned
+        wait_until -> not @stunned
+
+      toward_player = @vector_to @world.player
+      dist_to_player = toward_player\len!
+      left_of_player = toward_player[1] > 0
+
+      move, attack = switch @threat
+        when 0
+          100, 1
+        when 1
+          4, 1
+        else
+          1, 2
+
+      if @just_hit
+        attack = 10*attack
+        @just_hit = false
+
+      switch pick_dist { :move, :attack }
+        when "move"
+          dir = if dist_to_player < 150
+            pick_dist {
+              left: 1 + (left_of_player and 1 or 0)
+              right: 1 + (left_of_player and 0 or 1)
+              player: 3
+            }
+          else
+            pick_dist {
+              left: 3
+              right: 3
+              player: 2
+            }
+
+          dir = switch dir
+            when "left"
+              Vec2d -1, 0
+            when "right"
+              Vec2d 1, 0
+            when "player"
+              (toward_player)\normalized!
+
+          move, charge = switch @threat
+            when 0
+              3,1
+            when 1
+              1,1
+            else
+              1,3
+
+          switch pick_dist { :move, :charge }
+            when "charge"
+              await @\charge, dir
+            when "move"
+              await @\move, dir
+        when "attack"
+          await @\attack, @world.player
+
+      wait rand 0.4, 0.6
+      again!
+
 class Jelly extends Enemy
   w: 15
   h: 15
@@ -298,6 +314,38 @@ class Jelly extends Enemy
         }, 0.4
       }
 
+  make_ai: =>
+    Sequence ->
+      if @stunned
+        wait_until -> not @stunned
+
+      toward_player = @vector_to @world.player
+      dist_to_player = toward_player\len!
+      left_of_player = toward_player[1] > 0
+
+      dir = if dist_to_player < 150
+        pick_dist {
+          rand: 1
+          player: 3
+        }
+      else
+        pick_dist {
+          rand: 2
+          player: 1
+        }
+
+      print "moving", dir
+
+      dir = switch dir
+        when "rand"
+          Vec2d.random!
+        when "player"
+          (toward_player)\normalized!
+
+      await @\move, dir
+      wait rand 0.8, 1.1
+      again!
+
 class Snake extends Enemy
   lazy sprite: -> Spriter "images/enemy4.png", 50, 30
 
@@ -320,6 +368,19 @@ class Snake extends Enemy
           0,1,2,3
         }, 0.4, true
       }
+
+  make_ai: =>
+    Sequence ->
+      if @stunned
+        wait_until -> not @stunned
+
+      toward_player = @vector_to @world.player
+      dist_to_player = toward_player\len!
+      left_of_player = toward_player[1] > 0
+
+      wait 1.0
+
+
 
 class Sardine extends Enemy
   w: 8
@@ -346,5 +407,16 @@ class Sardine extends Enemy
           0,1,2,3
         }, 0.4, true
       }
+
+  make_ai: =>
+    Sequence ->
+      if @stunned
+        wait_until -> not @stunned
+
+      toward_player = @vector_to @world.player
+      dist_to_player = toward_player\len!
+      left_of_player = toward_player[1] > 0
+
+      wait 1.0
 
 { :Enemy, :Guppy, :Shark, :Jelly, :Snake, :Sardine }
