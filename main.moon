@@ -8,19 +8,21 @@ import Enemy from require "enemy"
 
 import Ripple from require "shaders"
 
+import ParalaxBg from require "background"
+
+paused = false
+
 class Ocean
   gravity_mag: 130
-  spawn_x: 20
-  spawn_y: 20
+  spawn_x: 300
+  spawn_y: 300
 
   new: =>
     @viewport = EffectViewport scale: GAME_CONFIG.scale
     @entities = DrawList!
     @particles = DrawList!
 
-    @bounds = Box 0,0,
-      @map and @map.real_width or 250,
-      @map and @map.real_height or 250
+    @bg = ParalaxBg @viewport
 
     @player = Player @spawn_x, @spawn_y
     @entities\add @player
@@ -41,7 +43,9 @@ class Ocean
     dir = (Vec2d(x,y) - Vec2d(@enemy\center!))\normalized!
     @enemy\attack @player, ->
 
-  on_key: =>
+  on_key: (key) =>
+    if key == "return"
+      paused = not paused
 
   draw: =>
     @shader\render ->
@@ -50,22 +54,20 @@ class Ocean
       if @map
         @map\draw @viewport
 
+      @bg\draw!
+
       COLOR\pusha 128
       show_grid @viewport, 20, 20
       COLOR\pop!
 
-
-      @bounds\draw {255,255,255,20}
-
       @entities\draw!
       @particles\draw!
+      @viewport\outline!
 
       @viewport\pop!
 
     @viewport\apply!
-
     @hud\draw @viewport
-
     @viewport\pop!
 
   gravity: (vec, dt) =>
@@ -74,14 +76,18 @@ class Ocean
     vec\adjust unpack @gravity_pull * dt
 
   collides: (thing) =>
-    @map\collides thing
+    if @map
+      @map\collides thing
 
   update: (dt) =>
+    return if paused
+
     @_t or= 0
     @_t += dt
     @gravity_pull = Vec2d.from_angle(90 + math.sin(@_t * 2) * 7) * @gravity_mag
 
     @hud\update dt, @
+    @bg\update dt, @
 
     @viewport\update dt
     @viewport\center_on @player, @map_box, dt
@@ -128,7 +134,7 @@ love.load = ->
   g.setBackgroundColor 15,17, 18
 
   export CONTROLLER = Controller GAME_CONFIG.keys
-  export DISPATCHER = Dispatcher Home!
+  export DISPATCHER = Dispatcher Ocean!
 
   DISPATCHER\bind love
 
