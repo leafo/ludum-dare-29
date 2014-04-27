@@ -160,7 +160,7 @@ class Player extends Entity
     true
 
   draw: =>
-    -- super!
+    Box.outline @
     @anim\draw @x, @y
 
     color = if @attacking
@@ -170,9 +170,9 @@ class Player extends Entity
     else
       {0,255, 0, 128}
 
-    -- COLOR\push color
-    -- @mouth_box\draw!
-    -- COLOR\pop!
+    COLOR\push color
+    @mouth_box\outline!
+    COLOR\pop!
 
   take_hit: (enemy, world) =>
     if @attacking

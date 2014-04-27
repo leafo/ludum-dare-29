@@ -4,7 +4,7 @@ require "lovekit.all"
 
 import Hud from require "hud"
 import Player from require "player"
-import Enemy from require "enemy"
+import Guppy from require "enemy"
 
 import Ripple from require "shaders"
 
@@ -44,7 +44,7 @@ class Ocean
     @player = Player @spawn_x, @spawn_y
     @entities\add @player
 
-    @enemy = Enemy 100, 100
+    @enemy = Guppy 100, 100
     @entities\add @enemy
     -- @entities\add Enemy 160, 120
 

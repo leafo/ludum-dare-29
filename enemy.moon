@@ -20,8 +20,10 @@ class Enemy extends Entity
     super ...
     @seqs = DrawList!
     @effects = EffectList!
+    @seqs\add @make_ai!
 
-    @seqs\add Sequence ->
+  make_ai: =>
+    Sequence ->
       if @stunned
         wait_until -> not @stunned
 
@@ -82,6 +84,7 @@ class Enemy extends Entity
 
       wait 0.5
       again!
+
 
   move: (dir, fn) =>
     speed = 250
@@ -154,6 +157,11 @@ class Enemy extends Entity
       @vel[2] = -@vel[2] / 2
 
 
+    @anim\set_state @facing
+
+    speed = @vel\len!
+    @anim\update dt * (1 + speed / 100)
+
     @update_mouth!
     @health > 0
 
@@ -182,22 +190,25 @@ class Enemy extends Entity
 
   draw: =>
     @effects\before!
+    @anim\draw @x, @y
 
-    color = if @stunned
-      {255,200,200}
-    elseif @move_accel
-      {20,20,20}
-    else
-      {255,255,255}
+    Box.outline @
 
-    super color
+    -- color = if @stunned
+    --   {255,200,200}
+    -- elseif @move_accel
+    --   {20,20,20}
+    -- else
+    --   {255,255,255}
 
-    COLOR\push {255, 0, 255, 128}
-    @mouth_box\draw!
-    COLOR\pop!
+    -- super color
 
-    if @slowing != 0
-      g.print "Slowing #{@slowing}", @x, @y
+    -- COLOR\push {255, 0, 255, 128}
+    -- @mouth_box\draw!
+    -- COLOR\pop!
+
+    -- if @slowing != 0
+    --   g.print "Slowing #{@slowing}", @x, @y
 
     @effects\after!
 
@@ -212,4 +223,21 @@ class Enemy extends Entity
     if @mouth_emitter
       @mouth_emitter.x, @mouth_emitter.y = @mouth_box\center!
 
-{ :Enemy }
+class Guppy extends Enemy
+  lazy sprite: -> Spriter "images/enemy1.png", 50, 30
+
+  new: (...) =>
+    super ...
+
+    with @sprite
+      @anim = StateAnim "right", {
+        left: \seq {
+          0,1,2,3
+        }, 0.4, true
+
+        right: \seq {
+          0,1,2,3
+        }, 0.4
+      }
+
+{ :Enemy, :Guppy }
