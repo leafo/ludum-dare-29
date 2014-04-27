@@ -74,7 +74,7 @@ class Ocean
     vec\adjust unpack @gravity_pull * dt
 
   collides: (thing) =>
-    not @bounds\contains_box thing
+    @map\collides thing
 
   update: (dt) =>
     @_t or= 0
