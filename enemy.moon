@@ -2,6 +2,7 @@
 {graphics: g} = love
 
 import BubbleEmitter, BloodEmitter from require "particles"
+import FadeAway from require "misc"
 
 class Enemy extends Entity
   is_enemy: true
@@ -14,8 +15,7 @@ class Enemy extends Entity
   slowing: 0
   threat: 0
 
-  health: 20*100
-  max_health: 20
+  health: 1
 
   facing: "left"
 
@@ -106,7 +106,11 @@ class Enemy extends Entity
     @anim\update dt * (1 + speed / 100)
 
     @update_mouth!
-    @health > 0
+    alive = @health > 0
+    unless alive
+      world.particles\add FadeAway @
+
+    alive
 
   take_hit: (p, world) =>
     return if @stunned
@@ -118,7 +122,7 @@ class Enemy extends Entity
     world.particles\add BloodEmitter world, @center!
     @effects\add FlashEffect!
 
-    @health -= 10
+    @health -= 1
 
     @stunned = @seqs\add Sequence ->
       dir = p.mouth_box\vector_to(@)\normalized!
@@ -174,6 +178,8 @@ class Guppy extends Enemy
   ox: 14
   oy: 9
 
+  health: 3
+
   lazy sprite: -> Spriter "images/enemy1.png", 50, 30
 
   new: (...) =>
@@ -221,6 +227,8 @@ class Shark extends Enemy
 
   w: 25
   h: 10
+
+  health: 5
 
   new: (...) =>
     super ...
@@ -312,6 +320,8 @@ class Jelly extends Enemy
   ox: 13
   oy: 5
 
+  health: 2
+
   lazy sprite: -> Spriter "images/enemy3.png", 40, 40
 
   new: (...) =>
@@ -367,6 +377,8 @@ class Snake extends Enemy
   ox: 8
   oy: 13
 
+  health: 2
+
   new: (...) =>
     super ...
 
@@ -406,6 +418,8 @@ class Sardine extends Enemy
 
   move_speed: 500
   move_time: 0.5
+
+  health: 1
 
   lazy sprite: -> Spriter "images/enemy5.png", 16, 16
 

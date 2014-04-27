@@ -89,7 +89,7 @@ class World
       paused = not paused
 
     if @exit\is_active! and CONTROLLER\is_down "cancel"
-      @exit\enter world
+      @exit\enter @
 
   draw: =>
     @shader\render ->
