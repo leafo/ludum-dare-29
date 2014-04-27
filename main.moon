@@ -1,4 +1,5 @@
 require "lovekit.all"
+require "lovekit.reloader"
 
 {graphics: g} = love
 
@@ -48,7 +49,7 @@ class Ocean
     @entities\add Shark 160, 120
     @entities\add Jelly 120, 180
     @entities\add Snake 180, 180
-    @entities\add Sardine 80, 250
+    @entities\add Sardine 80, 200
 
     @viewport\center_on @player
     @hud = Hud!
@@ -63,6 +64,9 @@ class Ocean
 
   mousepressed: (x,y) =>
     x, y = @viewport\unproject x, y
+    for e in *@entities
+      continue unless e.is_enemy
+      e.facing = e.facing == "left" and "right" or "left"
 
   on_key: (key) =>
     if key == "return"

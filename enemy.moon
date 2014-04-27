@@ -8,6 +8,9 @@ class Enemy extends Entity
   w: 40
   h: 20
 
+  ox: 0
+  oy: 0
+
   slowing: 0
   threat: 0
 
@@ -190,7 +193,7 @@ class Enemy extends Entity
 
   draw: =>
     @effects\before!
-    @anim\draw @x, @y
+    @anim\draw @x - @ox, @y - @oy
 
     Box.outline @
 
@@ -224,6 +227,12 @@ class Enemy extends Entity
       @mouth_emitter.x, @mouth_emitter.y = @mouth_box\center!
 
 class Guppy extends Enemy
+  w: 20
+  h: 10
+
+  ox: 14
+  oy: 9
+
   lazy sprite: -> Spriter "images/enemy1.png", 50, 30
 
   new: (...) =>
@@ -243,23 +252,35 @@ class Guppy extends Enemy
 class Shark extends Enemy
   lazy sprite: -> Spriter "images/enemy2.png", 50, 30
 
+  w: 25
+  h: 10
+
   new: (...) =>
     super ...
 
     with @sprite
       @anim = StateAnim "right", {
         left: \seq {
+          ox: 6
+          oy: 12
+
           0,1,2,3
         }, 0.4, true
 
         right: \seq {
+          ox: 19
+          oy: 12
+
           0,1,2,3
         }, 0.4
       }
 
 class Jelly extends Enemy
-  w: 40
-  h: 40
+  w: 15
+  h: 15
+
+  ox: 13
+  oy: 5
 
   lazy sprite: -> Spriter "images/enemy3.png", 40, 40
 
@@ -280,6 +301,12 @@ class Jelly extends Enemy
 class Snake extends Enemy
   lazy sprite: -> Spriter "images/enemy4.png", 50, 30
 
+  w: 30
+  h: 8
+
+  ox: 8
+  oy: 13
+
   new: (...) =>
     super ...
 
@@ -291,12 +318,12 @@ class Snake extends Enemy
 
         right: \seq {
           0,1,2,3
-        }, 0.4, false
+        }, 0.4, true
       }
 
 class Sardine extends Enemy
-  w: 16
-  h: 16
+  w: 8
+  h: 8
 
   lazy sprite: -> Spriter "images/enemy5.png", 16, 16
 
@@ -306,12 +333,18 @@ class Sardine extends Enemy
     with @sprite
       @anim = StateAnim "right", {
         left: \seq {
-          0,1,2,3
-        }, 0.4, true
+          ox: 0
+          oy: 4
 
-        right: \seq {
           0,1,2,3
         }, 0.4
+
+        right: \seq {
+          oy: 4
+          ox: 4
+
+          0,1,2,3
+        }, 0.4, true
       }
 
 { :Enemy, :Guppy, :Shark, :Jelly, :Snake, :Sardine }

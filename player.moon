@@ -14,8 +14,11 @@ class Player extends Entity
 
   lazy sprite: -> Spriter "images/player.png", 50, 30
 
-  w: 40
-  h: 20
+  w: 30
+  h: 10
+
+  ox: 10
+  oy: 8
 
   new: (...) =>
     super ...
@@ -161,7 +164,7 @@ class Player extends Entity
 
   draw: =>
     Box.outline @
-    @anim\draw @x, @y
+    @anim\draw @x - @ox, @y - @oy
 
     color = if @attacking
       {255,0, 0, 128}
