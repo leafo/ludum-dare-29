@@ -262,6 +262,7 @@ class Ocean extends World
     @map_box = @map
 
     @exit = Transport 0, @map_box.h - 100, 100, 100
+    @exit.message = "Press 'C' to return to home"
     @exit.activate = ->
       @entities\remove @player
       home = Home @game
