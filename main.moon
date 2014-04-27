@@ -62,6 +62,7 @@ class World
     @viewport = EffectViewport scale: GAME_CONFIG.scale
     @entities = DrawList!
     @particles = DrawList!
+    @seqs = DrawList!
 
     @player.x, @player.y = @spawn_x, @spawn_y
     @entities\add @player
@@ -80,6 +81,10 @@ class World
     @collide = UniformGrid!
 
     @shader = Ripple @viewport
+
+  on_show: =>
+    unless AUDIO.current_music == "main"
+      AUDIO\play_music "main"
 
   mousepressed: (x,y) =>
     x, y = @viewport\unproject x, y
@@ -137,6 +142,8 @@ class World
 
     @entities\update dt, @
     @particles\update dt, @
+    @seqs\update dt, @
+
     @collide\clear!
 
     for e in *@entities
@@ -235,6 +242,9 @@ love.load = ->
   g.setBackgroundColor 12,14, 15
 
   import Title, GameOver from require "screens"
+
+  export AUDIO = Audio "sounds"
+  AUDIO\preload { }
 
   export CONTROLLER = Controller GAME_CONFIG.keys
   export DISPATCHER = Dispatcher Title Game\start!

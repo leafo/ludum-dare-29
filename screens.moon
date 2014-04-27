@@ -16,6 +16,11 @@ class Title
     cx, cy = @viewport\center!
     @entities\add Anchor cx, cy + 70, l, "center", "center"
 
+  on_show: =>
+    unless AUDIO.current_music == "title"
+      AUDIO\play_music "title"
+      AUDIO.music\setVolume 0.25
+
   draw: =>
     @shader\render ->
       @viewport\apply!
@@ -50,6 +55,10 @@ class GameOver
 
   update: (dt) =>
     @entities\update dt
+
+  on_show: =>
+    if AUDIO.music
+      AUDIO.music\stop!
 
   on_key: =>
     import Game from require "main"

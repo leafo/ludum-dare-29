@@ -169,6 +169,10 @@ class Player extends Entity
     unless alive
       world.particles\add BloodEmitter world, @center!
       world.particles\add FadeAway @
+      world.particles\add Sequence ->
+        import GameOver from require "screens"
+        wait 1.0
+        DISPATCHER\replace GameOver!
 
     alive
 
