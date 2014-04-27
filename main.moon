@@ -237,7 +237,7 @@ love.load = ->
   import Title, GameOver from require "screens"
 
   export CONTROLLER = Controller GAME_CONFIG.keys
-  export DISPATCHER = Dispatcher GameOver!-- Title Game\start!
+  export DISPATCHER = Dispatcher Title Game\start!
 
   DISPATCHER.default_transition = FadeTransition
   DISPATCHER\bind love
