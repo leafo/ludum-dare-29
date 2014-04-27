@@ -4,7 +4,7 @@ require "lovekit.all"
 
 import Hud from require "hud"
 import Player from require "player"
-import Guppy, Shark from require "enemy"
+import Guppy, Shark, Jelly, Snake, Sardine from require "enemy"
 
 import Ripple from require "shaders"
 
@@ -46,6 +46,9 @@ class Ocean
 
     @entities\add Guppy 100, 100
     @entities\add Shark 160, 120
+    @entities\add Jelly 120, 180
+    @entities\add Snake 180, 180
+    @entities\add Sardine 80, 250
 
     @viewport\center_on @player
     @hud = Hud!

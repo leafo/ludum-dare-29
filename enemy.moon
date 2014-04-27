@@ -233,11 +233,11 @@ class Guppy extends Enemy
       @anim = StateAnim "right", {
         left: \seq {
           0,1,2,3
-        }, 0.4, true
+        }, 0.4
 
         right: \seq {
           0,1,2,3
-        }, 0.4
+        }, 0.4, true
       }
 
 class Shark extends Enemy
@@ -257,5 +257,61 @@ class Shark extends Enemy
         }, 0.4
       }
 
+class Jelly extends Enemy
+  w: 40
+  h: 40
 
-{ :Enemy, :Guppy, :Shark }
+  lazy sprite: -> Spriter "images/enemy3.png", 40, 40
+
+  new: (...) =>
+    super ...
+
+    with @sprite
+      @anim = StateAnim "right", {
+        left: \seq {
+          0,1,2,3
+        }, 0.4, true
+
+        right: \seq {
+          0,1,2,3
+        }, 0.4
+      }
+
+class Snake extends Enemy
+  lazy sprite: -> Spriter "images/enemy4.png", 50, 30
+
+  new: (...) =>
+    super ...
+
+    with @sprite
+      @anim = StateAnim "right", {
+        left: \seq {
+          0,1,2,3
+        }, 0.4
+
+        right: \seq {
+          0,1,2,3
+        }, 0.4, false
+      }
+
+class Sardine extends Enemy
+  w: 16
+  h: 16
+
+  lazy sprite: -> Spriter "images/enemy5.png", 16, 16
+
+  new: (...) =>
+    super ...
+
+    with @sprite
+      @anim = StateAnim "right", {
+        left: \seq {
+          0,1,2,3
+        }, 0.4, true
+
+        right: \seq {
+          0,1,2,3
+        }, 0.4
+      }
+
+{ :Enemy, :Guppy, :Shark, :Jelly, :Snake, :Sardine }
