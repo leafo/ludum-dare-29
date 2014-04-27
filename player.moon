@@ -12,7 +12,7 @@ class Player extends Entity
   health: 100
   max_health: 100
 
-  lazy sprite: -> Spriter "images/sprite.png", 40, 20
+  lazy sprite: -> Spriter "images/player.png", 50, 30
 
   w: 40
   h: 20
@@ -24,11 +24,20 @@ class Player extends Entity
     with @sprite
       @anim = StateAnim "right", {
         left: \seq {
-          "40,20,40,20"
-        }, 0.3, true
+          0,1,2,3
+        }, 0.4, true
+
         right: \seq {
-          "40,20,40,20"
-        }, 0.3
+          0,1,2,3
+        }, 0.4
+
+        left_attacking: \seq {
+          4,5,6,7
+        }, 0.4, true
+
+        right_attacking: \seq {
+          4,5,6,7
+        }, 0.4
       }
 
   looking_at: (viewport) =>
@@ -133,8 +142,14 @@ class Player extends Entity
       @vel[2] = -@vel[2] / 2
 
     @update_mouth!
-    @anim\set_state @facing
-    @anim\update dt
+    state = @facing
+    if @attacking
+      state = "#{state}_attacking"
+
+    @anim\set_state state
+    speed = @vel\len!
+
+    @anim\update dt * (1 + speed / 100)
     true
 
   draw: =>
