@@ -240,4 +240,22 @@ class Guppy extends Enemy
         }, 0.4
       }
 
-{ :Enemy, :Guppy }
+class Shark extends Enemy
+  lazy sprite: -> Spriter "images/enemy2.png", 50, 30
+
+  new: (...) =>
+    super ...
+
+    with @sprite
+      @anim = StateAnim "right", {
+        left: \seq {
+          0,1,2,3
+        }, 0.4, true
+
+        right: \seq {
+          0,1,2,3
+        }, 0.4
+      }
+
+
+{ :Enemy, :Guppy, :Shark }

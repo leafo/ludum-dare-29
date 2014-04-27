@@ -4,7 +4,7 @@ require "lovekit.all"
 
 import Hud from require "hud"
 import Player from require "player"
-import Guppy from require "enemy"
+import Guppy, Shark from require "enemy"
 
 import Ripple from require "shaders"
 
@@ -44,9 +44,8 @@ class Ocean
     @player = Player @spawn_x, @spawn_y
     @entities\add @player
 
-    @enemy = Guppy 100, 100
-    @entities\add @enemy
-    -- @entities\add Enemy 160, 120
+    @entities\add Guppy 100, 100
+    @entities\add Shark 160, 120
 
     @viewport\center_on @player
     @hud = Hud!
@@ -61,8 +60,6 @@ class Ocean
 
   mousepressed: (x,y) =>
     x, y = @viewport\unproject x, y
-    dir = (Vec2d(x,y) - Vec2d(@enemy\center!))\normalized!
-    @enemy\attack @player, ->
 
   on_key: (key) =>
     if key == "return"
