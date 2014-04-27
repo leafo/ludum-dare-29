@@ -6,6 +6,7 @@ require "lovekit.reloader"
 import Hud, MessageBox from require "hud"
 import Player from require "player"
 import Guppy, Shark, Jelly, Snake, Sardine from require "enemy"
+import SardineSpawner from require "spawners"
 
 import Ripple from require "shaders"
 
@@ -55,6 +56,8 @@ class World
 
   new: (@game) =>
     @player = @game.player
+    @player.vel[1] = 0
+    @player.vel[2] = 0
 
     @viewport = EffectViewport scale: GAME_CONFIG.scale
     @entities = DrawList!
@@ -104,7 +107,6 @@ class World
 
       @entities\draw!
       @particles\draw!
-      @viewport\outline!
 
       @viewport\pop!
 
@@ -166,6 +168,13 @@ class OceanMap extends Box
     not @contains_box thing
 
 class Ocean extends World
+  current_level: 1
+  levels: {
+    =>
+      SardineSpawner(@)\spawn 10
+
+  }
+
   new: (...) =>
     @map = OceanMap @
     @map_box = @map
@@ -178,6 +187,9 @@ class Ocean extends World
     @spawn_x, @spawn_y = @exit\center!
 
     super ...
+
+    if level = @levels[@current_level]
+      level @
 
 class Home extends World
   new: (...) =>
