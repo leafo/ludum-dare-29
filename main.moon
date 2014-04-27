@@ -152,13 +152,13 @@ class OceanMap extends Box
   y: 0
 
   w: 1000
-  h: 400
+  h: 300
 
-  new: (world) =>
+  new: =>
     @bg = ParalaxBg!
 
   draw: (viewport) =>
-    @bg\draw viewport
+    @bg\draw viewport, @
 
   update: (dt) =>
 
@@ -170,9 +170,11 @@ class Ocean extends World
     @map = OceanMap @
     @map_box = @map
 
-    @exit = Transport 0,0, 100, 100
+    @exit = Transport 0, @map_box.h - 100, 100, 100
     @exit.enter = ->
       DISPATCHER\replace Home @game
+
+    @spawn_x, @spawn_y = @exit\center!
 
     super ...
 

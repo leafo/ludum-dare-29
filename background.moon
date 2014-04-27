@@ -15,7 +15,7 @@ class ParalaxBg
 
   update: (dt) =>
 
-  draw: (viewport) =>
+  draw: (viewport, bounds) =>
     w,h = @sprite\width!, @sprite\height!
     vw = viewport.w
 
@@ -31,7 +31,7 @@ class ParalaxBg
       q = g.newQuad 0, 0, w * times, h, w, h
 
       g.push!
-      g.translate viewport.x, viewport.y + viewport.h
+      g.translate viewport.x, bounds.h
       
       px = -(l - 1) / @layers + 1
 
