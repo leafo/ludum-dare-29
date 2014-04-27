@@ -235,7 +235,7 @@ class Player extends Entity
     COLOR\pop!
 
   take_hit: (enemy, world) =>
-    if enemy.is_transport
+    if enemy.is_zone
       enemy\take_hit @, world
       return
 

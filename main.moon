@@ -70,17 +70,17 @@ class Intro extends Sequence
   draw: (...) =>
     @entities\draw ...
 
-class Transport extends Box
+class Zone extends Box
+  is_zone: true
+  is_misc: true
+
   touching_player: 0
-  is_transport: true
 
-  message: "Press 'C' to exit"
-
-  is_active: =>
-    @touching_player > 0
-
-  enter: (world) =>
+  activate: (world) =>
     error "replace me"
+
+  is_ready: =>
+    @touching_player > 0
 
   update: (dt, world) =>
     if @touching_player > 0
@@ -95,12 +95,16 @@ class Transport extends Box
   take_hit: (player, world) =>
     @touching_player = 2
 
-    unless @message_box
-      @message_box = MessageBox @message
-      world.hud\show_message_box @message_box
+    if @message
+      unless @message_box
+        @message_box = MessageBox @message
+        world.hud\show_message_box @message_box
 
   draw: =>
     Box.outline @
+
+class Transport extends Zone
+  message: "Press 'C' to exit"
 
 class World
   gravity_mag: 130
@@ -122,6 +126,7 @@ class World
     @entities\add @player
 
     @entities\add @exit if @exit
+    @entities\add @rest if @rest
 
     @viewport\center_on @player
     @hud = Hud @
@@ -131,6 +136,10 @@ class World
     @shader = Ripple @viewport
 
   on_show: =>
+    return if @game.show_intro
+    @start_music!
+
+  start_music: =>
     unless AUDIO.current_music == "main"
       AUDIO\play_music "main"
 
@@ -144,8 +153,8 @@ class World
     if key == "return"
       paused = not paused
 
-    if @exit\is_active! and CONTROLLER\is_down "cancel"
-      @exit\enter @
+    if @exit\is_ready! and CONTROLLER\is_down "cancel"
+      @exit\activate @
 
   draw: =>
     @shader\render ->
@@ -242,7 +251,7 @@ class Ocean extends World
     @map_box = @map
 
     @exit = Transport 0, @map_box.h - 100, 100, 100
-    @exit.enter = ->
+    @exit.activate = ->
       @entities\remove @player
       DISPATCHER\replace Home @game
 
@@ -261,10 +270,13 @@ class Home extends World
           when "spawn"
             @spawn_x = o.x
             @spawn_y = o.y
+          when "rest"
+            @rest = Zone o.x, o.y, o.width, o.height
+            @rest.message = "Press 'C' to rest"
           when "exit"
             @exit = Transport o.x, o.y, o.width, o.height
             @exit.message = "Press 'C' to enter the sea"
-            @exit.enter = ->
+            @exit.activate = ->
               @entities\remove @player
               DISPATCHER\replace Ocean @game
     }
