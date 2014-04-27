@@ -96,12 +96,18 @@ class Player extends Entity
     @accel = CONTROLLER\movement_vector @speed
     decel = @speed / 100
 
-    dtu, dtd = CONTROLLER\double_tapped "up", "down"
+    dtu, dtd, dtl, dtr = CONTROLLER\double_tapped "up", "down", "left", "right"
 
-    if (dtu or dtd) and not @boost_seq
+    if (dtu or dtd or dtl or dtr) and not @boost_seq
+      print dtu, dtd, dtl, dtr
       boost_power = 1500
       @boost_seq = @seqs\add Sequence ->
-        @boost_accel = Vec2d 0, dtu and -boost_power or boost_power
+        xx = dtl and -1 or (dtr and 1) or 0
+        yy = dtu and -1 or (dtd and 1) or 0
+
+        print "boosting", xx, yy
+
+        @boost_accel = Vec2d  xx * boost_power, yy * boost_power
         wait 0.15
         @boost_accel = false
         wait 0.3
@@ -163,9 +169,9 @@ class Player extends Entity
     else
       {0,255, 0, 128}
 
-    COLOR\push color
-    @mouth_box\draw!
-    COLOR\pop!
+    -- COLOR\push color
+    -- @mouth_box\draw!
+    -- COLOR\pop!
 
   take_hit: (enemy, world) =>
     if @attacking
