@@ -103,7 +103,7 @@ class Player extends Entity
 
     if (dtu or dtd or dtl or dtr) and not @boosting
       print dtu, dtd, dtl, dtr
-      boost_power = 1500
+      boost_power = 1000
       @boosting = @seqs\add Sequence ->
         xx = dtl and -1 or (dtr and 1) or 0
         yy = dtu and -1 or (dtd and 1) or 0

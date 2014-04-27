@@ -19,6 +19,9 @@ class Enemy extends Entity
 
   facing: "left"
 
+  move_speed: 250
+  move_time: 1.0
+
   new: (...) =>
     super ...
     @seqs = DrawList!
@@ -29,13 +32,12 @@ class Enemy extends Entity
     error "implement ai for enemy #{@@__name}"
 
   move: (dir, fn) =>
-    speed = 250
     @seqs\add Sequence ->
       @slowing -= 1
-      @move_accel = dir * speed
-      wait 0.15
+      @move_accel = dir * @move_speed
+      wait 0.15 * @move_time
       @move_accel = false
-      wait 1.0
+      wait 0.85 * @move_time
       @slowing += 1
       fn!
 
@@ -97,7 +99,6 @@ class Enemy extends Entity
 
     if cy
       @vel[2] = -@vel[2] / 2
-
 
     @anim\set_state @facing
 
@@ -381,10 +382,12 @@ class Snake extends Enemy
       wait 1.0
 
 
-
 class Sardine extends Enemy
   w: 8
   h: 8
+
+  move_speed: 500
+  move_time: 0.5
 
   lazy sprite: -> Spriter "images/enemy5.png", 16, 16
 
@@ -415,8 +418,15 @@ class Sardine extends Enemy
 
       toward_player = @vector_to @world.player
       dist_to_player = toward_player\len!
-      left_of_player = toward_player[1] > 0
 
-      wait 1.0
+      dir = if dist_to_player < 200 and math.random! < 0.5
+        print "to player"
+        toward_player\normalized!
+      else
+        Vec2d.random!
+
+      await @\move, dir
+      wait 0.2
+      again!
 
 { :Enemy, :Guppy, :Shark, :Jelly, :Snake, :Sardine }
