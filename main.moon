@@ -10,15 +10,19 @@ import Ripple from require "shaders"
 
 class Ocean
   gravity_mag: 130
+  spawn_x: 20
+  spawn_y: 20
 
   new: =>
     @viewport = EffectViewport scale: GAME_CONFIG.scale
     @entities = DrawList!
     @particles = DrawList!
 
-    @bounds = Box 0,0, 250, 200
+    @bounds = Box 0,0,
+      @map and @map.real_width or 250,
+      @map and @map.real_height or 250
 
-    @player = Player 20, 20
+    @player = Player @spawn_x, @spawn_y
     @entities\add @player
 
     @enemy = Enemy 100, 100
@@ -42,15 +46,19 @@ class Ocean
   draw: =>
     @shader\render ->
       @viewport\apply!
+
+      if @map
+        @map\draw @viewport
+
       COLOR\pusha 128
       show_grid @viewport, 20, 20
       COLOR\pop!
+
 
       @bounds\draw {255,255,255,20}
 
       @entities\draw!
       @particles\draw!
-
 
       @viewport\pop!
 
@@ -76,7 +84,7 @@ class Ocean
     @hud\update dt, @
 
     @viewport\update dt
-    @viewport\center_on @player, nil, dt
+    @viewport\center_on @player, @map_box, dt
 
     @entities\update dt, @
     @particles\update dt, @
@@ -92,6 +100,20 @@ class Ocean
       @player\take_hit e, @
 
 
+class Home extends Ocean
+  new: =>
+    @map = TileMap.from_tiled "maps/home", {
+      object: (o) ->
+        switch o.name
+          when "spawn"
+            @spawn_x = o.x
+            @spawn_y = o.y
+    }
+
+    @map_box = @map\to_box!
+
+    super!
+
 load_font = (img, chars)->
   font_image = imgfy img
   g.newImageFont font_image.tex, chars
@@ -106,7 +128,7 @@ love.load = ->
   g.setBackgroundColor 15,17, 18
 
   export CONTROLLER = Controller GAME_CONFIG.keys
-  export DISPATCHER = Dispatcher Ocean!
+  export DISPATCHER = Dispatcher Home!
 
   DISPATCHER\bind love
 

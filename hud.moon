@@ -21,10 +21,12 @@ class Hud
     @health_bar = HBar!
 
     @top_list = HList {
+      x: 10
+      y: 10
+
       yalign: "center"
       Label "Fish"
       @health_bar
-      Label "World"
       Label ->
         tostring love.timer.getFPS!
     }

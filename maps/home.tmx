@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="30" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="tiles" tilewidth="16" tileheight="16">
+  <image source="../images/tiles.png" width="256" height="256"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="40" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztlEEOhCAMRfEOjBfxCG48grMf738FdUHSmMJ8WlsxocmL0Qh9lMIQQhhAxop/OSShyXdlETpY+Fm4IH5eedFo2e0Mbf9aR8u1+4Y2akc9OKYHnGruitnZ7V+97rrbvdy89lfi5rG/ySsefISO1m50j0oeuTVYBbdHSJ95+NF+Q+pXWoOVV039Tn4HG/N9NfJCcqOk8RszFzd3Lp/mnKJEkide3kvj0HOqpRRv9kPPgZbUW/SJ9rf2HHTyePWnFK/+1ND7s5PYAZBzFaw=
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="40" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztll0OgjAQhLm7BvUZInoBvIEcAAIHkOh1nIcS1035CSwskP2SSTZpUzZDO20QyJBCD6G1xhBCJ1eXUMXGn1C2aEf/XKHE1W/oo9AD9WiNUI/WhPm2b+z//sihYqFvjeEF1dpNMLTvvj6m3H0H6CjYizQRFGs30cGc/knklrR/Z+jiap5bvnfZVPjZ8/lN59yge8tac7zL+Nnz+c3nSPrU+EH3ypCM78o0SZ8aP+heGZLx2u/5PWe+YRjGFvgCKUo4vQ==
+  </data>
+ </layer>
+ <objectgroup name="objects" width="40" height="30">
+  <object name="spawn" x="137" y="148"/>
+ </objectgroup>
+</map>
