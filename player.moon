@@ -1,7 +1,8 @@
 
-import BubbleEmitter from require "particles"
-
 {graphics: g} = love
+
+import BubbleEmitter, BloodEmitter from require "particles"
+import FadeAway from require "misc"
 
 class Player extends Entity
   is_player: true
@@ -10,7 +11,6 @@ class Player extends Entity
   facing: "right"
 
   health: 100
-  max_health: 100
 
   lazy sprite: -> Spriter "images/player.png", 50, 30
 
@@ -23,6 +23,7 @@ class Player extends Entity
   new: (...) =>
     super ...
     @seqs = DrawList!
+    @effects = EffectList!
 
     with @sprite
       @anim = StateAnim "right", {
@@ -97,6 +98,7 @@ class Player extends Entity
       @attack world
 
     @seqs\update dt, world
+    @effects\update dt, world
 
     @accel = CONTROLLER\movement_vector @speed
     decel = @speed / 100
@@ -162,11 +164,20 @@ class Player extends Entity
     speed = @vel\len!
 
     @anim\update dt * (1 + speed / 100)
-    true
+    alive = @health > 0
+
+    unless alive
+      world.particles\add BloodEmitter world, @center!
+      world.particles\add FadeAway @
+
+    alive
 
   draw: =>
     Box.outline @
+
+    @effects\before!
     @anim\draw @x - @ox, @y - @oy
+    @effects\after!
 
     color = if @attacking
       {255,0, 0, 128}
@@ -192,10 +203,10 @@ class Player extends Entity
     return if @stunned
     knockback = 2000
     world.viewport\shake nil, nil, 2
+    @effects\add FlashEffect!
 
     @stunned = @seqs\add Sequence ->
-      @health -= 15
-
+      @health = math.max 0, @health - 15
       dir = enemy\vector_to(@)\normalized!
 
       @vel[1] = @vel[1] / 2

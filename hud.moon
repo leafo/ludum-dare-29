@@ -154,7 +154,7 @@ class Hud
 
   update: (dt, @world) =>
     p = world.player
-    @health_bar.p = smooth_approach @health_bar.p, p.health / p.max_health, dt
+    @health_bar.p = smooth_approach @health_bar.p, p.health / p.__class.health, dt
     @radar.x = world.viewport.w - @margin
 
     @entities\update dt, world

@@ -6,12 +6,10 @@ class FadeAway extends Sequence
     super ->
       @alpha = 255
       @scale = 1
-      print "start fade"
       tween @, 0.5, {
         alpha: 0
         scale: 3
       }
-      print "end fade"
 
   draw: =>
     cx, cy = @thing\center!
