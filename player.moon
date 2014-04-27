@@ -206,5 +206,6 @@ class Player extends Entity
       wait 0.3
       @stunned = false
 
+  __tostring: =>  "<Player #{Box.__tostring @}>"
 
 { :Player }

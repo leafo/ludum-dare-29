@@ -203,7 +203,6 @@ class Guppy extends Enemy
         pick_dist { charge: 1, move: 3 }
 
       dir = if dist_to_player < 200 and math.random! < 0.5
-        print "to player"
         toward_player\normalized!
       else
         Vec2d.random!
@@ -349,8 +348,6 @@ class Jelly extends Enemy
           player: 1
         }
 
-      print "moving", dir
-
       dir = switch dir
         when "rand"
           Vec2d.random!
@@ -394,7 +391,6 @@ class Snake extends Enemy
       left_of_player = toward_player[1] > 0
 
       dir = if dist_to_player < 200 and math.random! < 0.5
-        print "to player"
         toward_player\normalized!
       else
         Vec2d.random!
@@ -442,7 +438,6 @@ class Sardine extends Enemy
       dist_to_player = toward_player\len!
 
       dir = if dist_to_player < 200 and math.random! < 0.5
-        print "to player"
         toward_player\normalized!
       else
         Vec2d.random!

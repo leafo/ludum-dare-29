@@ -172,6 +172,7 @@ class Ocean extends World
 
     @exit = Transport 0, @map_box.h - 100, 100, 100
     @exit.enter = ->
+      @entities\remove @player
       DISPATCHER\replace Home @game
 
     @spawn_x, @spawn_y = @exit\center!
@@ -190,6 +191,7 @@ class Home extends World
             @exit = Transport o.x, o.y, o.width, o.height
             @exit.message = "Press 'C' to enter the sea"
             @exit.enter = ->
+              @entities\remove @player
               DISPATCHER\replace Ocean @game
     }
 

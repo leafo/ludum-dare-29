@@ -78,6 +78,8 @@ class Radar extends Box
     g.setPointSize 4
 
     for e in *@world.entities
+      continue unless e.alive
+
       pushed = if e.is_enemy
         COLOR\push 255,100,100, 128
         true
