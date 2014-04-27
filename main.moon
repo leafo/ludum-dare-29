@@ -48,8 +48,8 @@ class Ocean
     -- @entities\add Guppy 100, 100
     -- @entities\add Shark 160, 120
     -- @entities\add Jelly 120, 180
-    -- @entities\add Snake 180, 180
-    @entities\add Sardine 80, 200
+    @entities\add Snake 180, 180
+    -- @entities\add Sardine 80, 200
 
     @viewport\center_on @player
     @hud = Hud!

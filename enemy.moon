@@ -112,10 +112,11 @@ class Enemy extends Entity
     return if @stunned
     @threat = 3
     @just_hit = true
-    power = 3000
+    power = 2500
 
     world.viewport\shake!
     world.particles\add BloodEmitter world, @center!
+    @effects\add FlashEffect!
 
     @health -= 10
 
@@ -177,16 +178,15 @@ class Guppy extends Enemy
 
   new: (...) =>
     super ...
-
     with @sprite
       @anim = StateAnim "right", {
         left: \seq {
           0,1,2,3
-        }, 0.4
+        }, 0.4, true
 
         right: \seq {
           0,1,2,3
-        }, 0.4, true
+        }, 0.4
       }
 
   make_ai: =>
@@ -196,12 +196,26 @@ class Guppy extends Enemy
 
       toward_player = @vector_to @world.player
       dist_to_player = toward_player\len!
-      left_of_player = toward_player[1] > 0
 
-      wait 1.0
+      action = if dist_to_player < 250
+        pick_dist { charge: 1, move: 1 }
+      else
+        pick_dist { charge: 1, move: 3 }
 
+      dir = if dist_to_player < 200 and math.random! < 0.5
+        print "to player"
+        toward_player\normalized!
+      else
+        Vec2d.random!
 
+      switch action
+        when "charge"
+          await @\charge, dir
+        when "move"
+          await @\move, dir
 
+      wait rand 0.5, 0.6
+      again!
 
 class Shark extends Enemy
   lazy sprite: -> Spriter "images/enemy2.png", 50, 30
@@ -379,7 +393,15 @@ class Snake extends Enemy
       dist_to_player = toward_player\len!
       left_of_player = toward_player[1] > 0
 
-      wait 1.0
+      dir = if dist_to_player < 200 and math.random! < 0.5
+        print "to player"
+        toward_player\normalized!
+      else
+        Vec2d.random!
+
+      await @\charge, dir
+      wait rand 1.0, 1.2
+      again!
 
 
 class Sardine extends Enemy
