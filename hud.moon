@@ -20,15 +20,35 @@ class Hud
   new: =>
     @health_bar = HBar!
 
-    @top_list = HList {
+    nice = (n) ->
+      math.floor(n * 100) / 100
+
+    @top_list = VList {
       x: 10
       y: 10
 
-      yalign: "center"
-      Label "Fish"
-      @health_bar
+      HList {
+
+        yalign: "center"
+        Label "Fish"
+        @health_bar
+        Label ->
+          tostring love.timer.getFPS!
+      }
+
       Label ->
-        tostring love.timer.getFPS!
+        return "" unless @world
+        player = @world.player
+
+        "Speed: #{nice player.vel\len!}, Vel: #{nice player.vel[1]},  #{nice player.vel[2]}"
+
+      Label ->
+        return "" unless @world
+        player = @world.player
+        return "" unless player.accel
+        "Accel: #{nice player.accel[1]},  #{nice player.accel[2]}"
+
+
     }
 
   draw: (v) =>
@@ -38,6 +58,7 @@ class Hud
     g.pop!
 
   update: (dt, world) =>
+    @world = world
     p = world.player
     @health_bar.p = smooth_approach @health_bar.p, p.health / p.max_health, dt
 
