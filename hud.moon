@@ -47,6 +47,8 @@ class Radar extends Box
     @h = @w / r
 
 class Hud
+  margin: 10
+
   new: =>
     @health_bar = HBar!
 
@@ -54,18 +56,13 @@ class Hud
       math.floor(n * 100) / 100
 
     @top_list = VList {
-      x: 10
-      y: 10
+      x: @margin
+      y: @margin
 
       HList {
         yalign: "center"
         Label "HP:"
         @health_bar
-
-        Radar!
-
-
-
       }
 
       Label -> tostring love.timer.getFPS!
@@ -80,14 +77,16 @@ class Hud
         player = @world.player
         return "" unless player.accel
         "Accel: #{nice player.accel[1]},  #{nice player.accel[2]}"
-
-
     }
+
+
+    @radar = Anchor @margin, @margin, Radar!, "right", "top"
 
   draw: (v) =>
     g.push!
     g.translate v.x, v.y
     @top_list\draw!
+    @radar\draw!
     g.pop!
 
   update: (dt, world) =>
@@ -95,6 +94,9 @@ class Hud
     p = world.player
     @health_bar.p = smooth_approach @health_bar.p, p.health / p.max_health, dt
 
+    @radar.x = world.viewport.w - @margin
+
     @top_list\update dt, world
+    @radar\update dt, world
 
 { :Hud }

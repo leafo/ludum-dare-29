@@ -151,7 +151,7 @@ love.load = ->
   g.setBackgroundColor 15,17, 18
 
   export CONTROLLER = Controller GAME_CONFIG.keys
-  export DISPATCHER = Dispatcher Ocean!
+  export DISPATCHER = Dispatcher Home!
 
   DISPATCHER\bind love
 
