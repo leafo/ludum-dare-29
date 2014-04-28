@@ -260,7 +260,6 @@ class OceanMap extends Box
     not @contains_box thing
 
 class Ocean extends World
-  current_level: 1
   levels: {
     =>
       SardineSpawner(@)\spawn 1
@@ -287,9 +286,9 @@ class Ocean extends World
 
     super ...
 
-    if level = @levels[@current_level]
+    print "current level", @game.current_level
+    if level = @levels[@game.current_level]
       level @
-
 
   has_enemies: =>
     has_enemies = false
@@ -367,8 +366,10 @@ class Home extends World
       wait_for_key unpack GAME_CONFIG.keys.confirm
       @entities\remove current
       @player.locked = false
+      @game.current_level += 1
 
 class Game
+  current_level: 1
   show_intro: false -- true
 
   @start: =>
