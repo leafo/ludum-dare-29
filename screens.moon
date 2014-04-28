@@ -47,7 +47,12 @@ class GameOver
     @shader = Ripple @viewport
     @entities = DrawList!
 
-    l = RevealLabel "You have become fish fodder\nPress 'X' to return to title\nThanks for playing!\nYour score: #{game.score}"
+    msg = if game\beat_game!
+      "You're conquered the ocean"
+    else
+      "You have become fish fodder"
+
+    l = RevealLabel "#{msg}\nPress 'X' to return to title\nThanks for playing!\nYour score: #{game.score}"
 
     cx, cy = @viewport\center!
     @entities\add Anchor cx, cy - 20, l, "center", "center"
