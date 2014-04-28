@@ -376,8 +376,8 @@ class Home extends World
 
     super ...
 
-    do return
     if @game.show_intro
+      @game.show_intro = false
       @player.locked = true
       @entities\add Intro @, ->
         @start_music!
@@ -411,8 +411,8 @@ class Home extends World
       @game.current_level += 1
 
 class Game
-  current_level: 5
-  show_intro: false -- true
+  current_level: 1
+  show_intro: true
 
   @start: =>
     game = Game!
@@ -454,8 +454,8 @@ love.load = ->
     "intro_explosion"
   }
 
-  AUDIO.play_music = =>
-    @music = setmetatable {}, __index: -> ->
+  -- AUDIO.play_music = =>
+  --   @music = setmetatable {}, __index: -> ->
 
   export CONTROLLER = Controller GAME_CONFIG.keys
   export DISPATCHER = Dispatcher Title Game\start!
