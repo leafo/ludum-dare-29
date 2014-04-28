@@ -125,7 +125,7 @@ class Hud
         Label -> "Score: #{math.floor @display_score}"
       }
 
-      Label -> tostring love.timer.getFPS!
+      -- Label -> tostring love.timer.getFPS!
     }
 
 

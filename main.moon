@@ -161,7 +161,7 @@ class World
       e.facing = e.facing == "left" and "right" or "left"
 
   on_key: (key) =>
-    if key == "return"
+    if key == "p"
       paused = not paused
 
     if CONTROLLER\is_down "cancel"
@@ -377,9 +377,9 @@ class Home extends World
     super ...
 
     if @game.show_intro
-      @game.show_intro = false
       @player.locked = true
       @entities\add Intro @, ->
+        @game.show_intro = false
         @start_music!
         @player.locked = false
 
