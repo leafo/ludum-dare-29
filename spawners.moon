@@ -6,7 +6,7 @@ class Spawner extends Box
   radius: 40
 
   new: (@world) =>
-    @area = world.map_box\shrink @radius
+    @area = world.map_box\shrink @radius * 1.5
 
   position: =>
     with spawn_area = Box 0,0, @radius, @radius
