@@ -147,9 +147,9 @@ class Enemy extends Entity
   draw: =>
     @effects\before!
     @anim\draw @x - @ox, @y - @oy
+    @effects\after!
 
-    Box.outline @
-
+    -- Box.outline @
     -- color = if @stunned
     --   {255,200,200}
     -- elseif @move_accel
@@ -166,7 +166,6 @@ class Enemy extends Entity
     -- if @slowing != 0
     --   g.print "Slowing #{@slowing}", @x, @y
 
-    @effects\after!
 
   update_mouth: =>
     @mouth_box or= Box @x, @y, 10, 10

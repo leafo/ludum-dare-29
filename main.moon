@@ -72,7 +72,6 @@ class Intro extends Sequence
 
 class Zone extends Box
   is_zone: true
-  is_misc: true
 
   touching_player: 0
 
@@ -100,12 +99,13 @@ class Zone extends Box
       world.hud\show_message_box @message_box
 
   draw: =>
-    Box.outline @
+    -- Box.outline @
 
 class Transport extends Zone
   message: "Press 'C' to exit"
 
 class RestZone extends Zone
+  is_misc: true
   message: "Press 'C' to rest"
   new: (@world, ...) =>
     super ...

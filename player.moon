@@ -217,22 +217,21 @@ class Player extends Entity
     alive
 
   draw: =>
-    Box.outline @
-
     @effects\before!
     @anim\draw @x - @ox, @y - @oy
     @effects\after!
 
-    color = if @attacking
-      {255,0, 0, 128}
-    elseif @stunned
-      {255,0, 255, 128}
-    else
-      {0,255, 0, 128}
+    --Box.outline @
+    -- color = if @attacking
+    --   {255,0, 0, 128}
+    -- elseif @stunned
+    --   {255,0, 255, 128}
+    -- else
+    --   {0,255, 0, 128}
 
-    COLOR\push color
-    @mouth_box\outline!
-    COLOR\pop!
+    -- COLOR\push color
+    -- @mouth_box\outline!
+    -- COLOR\pop!
 
   take_hit: (enemy, world) =>
     if enemy.is_zone
