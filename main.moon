@@ -278,7 +278,7 @@ class Ocean extends World
     @exit.activate = ->
       @entities\remove @player
       home = Home @game
-      home.can_rest = true
+      home.can_rest = not @has_enemies!
 
       DISPATCHER\replace home
       home\set_player_pos home.exit\center!
@@ -290,12 +290,18 @@ class Ocean extends World
     if level = @levels[@current_level]
       level @
 
-  update: (dt) =>
+
+  has_enemies: =>
     has_enemies = false
     for e in *@entities
       if e.alive and e.is_enemy
         has_enemies = true
         break
+
+    has_enemies
+
+  update: (dt) =>
+    has_enemies = @has_enemies!
 
     if not has_enemies and not @return_mb
       @return_mb = MessageBox "The ocean is calm"
@@ -305,7 +311,7 @@ class Ocean extends World
 
 
 class Home extends World
-  can_rest: true
+  can_rest: false
 
   new: (...) =>
     @map = TileMap.from_tiled "maps/home", {
