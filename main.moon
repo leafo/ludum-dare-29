@@ -345,7 +345,7 @@ class Ocean extends World
     has_enemies = @has_enemies!
 
     if not has_enemies and not @return_mb
-      @return_mb = MessageBox "The ocean is calm"
+      @return_mb = MessageBox "The ocean is calm, return home"
       @hud\show_message_box @return_mb
 
     super dt
