@@ -278,6 +278,21 @@ class Ocean extends World
     if level = @levels[@current_level]
       level @
 
+
+  update: (dt) =>
+    has_enemies = false
+    for e in *@entities
+      if e.alive and e.is_enemy
+        has_enemies = true
+        break
+
+    if not has_enemies and not @return_mb
+      @return_mb = MessageBox "The ocean is calm"
+      @hud\show_message_box @return_mb
+
+    super dt
+
+
 class Home extends World
   can_rest: false
 

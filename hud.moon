@@ -132,6 +132,11 @@ class Hud
     @radar = Anchor @margin, @margin, Radar!, "right", "top"
     @entities\add @radar
 
+
+  has_message_box: =>
+    return false unless @msg_box
+    return @msg_box.visible
+
   show_message_box: (mbox) =>
     if @msg_box and @msg_box.visible
       @msg_box\hide!
