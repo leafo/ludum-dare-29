@@ -119,6 +119,7 @@ class World
   spawn_x: 300
   spawn_y: 300
   hud_alpha: 255
+  overlay_alpha: 0
 
   new: (@game) =>
     @player = @game.player
@@ -164,8 +165,12 @@ class World
     if key == "return"
       paused = not paused
 
-    if @exit\is_ready! and CONTROLLER\is_down "cancel"
-      @exit\activate @
+    if CONTROLLER\is_down "cancel"
+      if @exit\is_ready!
+        @exit\activate @
+
+      if @rest and @rest\is_ready!
+        @rest\activate @
 
   draw: =>
     @shader\render ->
@@ -180,6 +185,13 @@ class World
 
       @entities\draw!
       @particles\draw!
+
+      if @overlay_alpha and @overlay_alpha > 0
+        @viewport\apply!
+        COLOR\push {0,0,0, @overlay_alpha}
+        Box.draw @viewport
+        COLOR\pop!
+        @viewport\pop!
 
       @viewport\pop!
 
@@ -251,7 +263,7 @@ class Ocean extends World
   current_level: 1
   levels: {
     =>
-      SardineSpawner(@)\spawn 10
+      SardineSpawner(@)\spawn 1
 
     =>
       SardineSpawner(@)\spawn 10
@@ -278,7 +290,6 @@ class Ocean extends World
     if level = @levels[@current_level]
       level @
 
-
   update: (dt) =>
     has_enemies = false
     for e in *@entities
@@ -294,7 +305,7 @@ class Ocean extends World
 
 
 class Home extends World
-  can_rest: false
+  can_rest: true
 
   new: (...) =>
     @map = TileMap.from_tiled "maps/home", {
@@ -305,6 +316,7 @@ class Home extends World
             @spawn_y = o.y
           when "rest"
             @rest = RestZone @, o.x, o.y, o.width, o.height
+            @rest.activate = @\do_rest
           when "exit"
             @exit = Transport o.x, o.y, o.width, o.height
             @exit.message = "Press 'C' to enter the sea"
@@ -323,6 +335,32 @@ class Home extends World
       @entities\add Intro @, ->
         @start_music!
         @player.locked = false
+
+  do_rest: =>
+    @can_rest = false
+
+    @seqs\add Sequence ->
+      @player.locked = true
+
+      @hud\clear_message_box!
+      tween @, 1.0, overlay_alpha: 255
+      @player.health = @player.__class.health
+      AUDIO\play "recover"
+      wait 1.0
+      tween @, 1.0, overlay_alpha: 0
+
+      local current
+      await (fn) ->
+        label = with RevealLabel "The feral fish grow stronger", 10, 10, fn
+          .rate = 0.05
+        cx, cy = @viewport\center!
+        current = Anchor cx, cy, label, "center", "center"
+
+        @entities\add current
+
+      wait_for_key unpack GAME_CONFIG.keys.confirm
+      @entities\remove current
+      @player.locked = false
 
 class Game
   show_intro: false -- true
