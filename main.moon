@@ -6,7 +6,6 @@ require "lovekit.all"
 import Hud, MessageBox from require "hud"
 import Player from require "player"
 import Guppy, Shark, Jelly, Snake, Sardine from require "enemy"
-import SardineSpawner from require "spawners"
 
 import Ripple from require "shaders"
 
@@ -259,13 +258,51 @@ class OceanMap extends Box
   collides: (thing) =>
     not @contains_box thing
 
+
+import
+  SardineSpawner
+  JellySpawner
+  GuppySpawner
+  SnakeSpawner
+  SharkSpawner
+  from require "spawners"
+
 class Ocean extends World
   levels: {
-    =>
-      SardineSpawner(@)\spawn 1
+    => -- 1
+      SardineSpawner(@)\spawn 5
+      SardineSpawner(@)\spawn 8
 
-    =>
-      SardineSpawner(@)\spawn 10
+    => -- 2
+      SardineSpawner(@)\spawn 8
+      JellySpawner(@)\spawn 3
+      JellySpawner(@)\spawn 3
+
+    => -- 3
+      JellySpawner(@)\spawn 3
+      GuppySpawner(@)\spawn 2
+      SnakeSpawner(@)\spawn 2
+
+    => -- 4
+      SharkSpawner(@)\spawn 1
+
+      GuppySpawner(@)\spawn 1
+      GuppySpawner(@)\spawn 1
+      GuppySpawner(@)\spawn 1
+
+      SnakeSpawner(@)\spawn 2
+      SnakeSpawner(@)\spawn 2
+
+
+    => -- 5
+      SharkSpawner(@)\spawn 2
+      SharkSpawner(@)\spawn 2
+
+      GuppySpawner(@)\spawn 3
+      GuppySpawner(@)\spawn 3
+
+      SardineSpawner(@)\spawn 5
+      SardineSpawner(@)\spawn 5
   }
 
   new: (...) =>
@@ -286,9 +323,14 @@ class Ocean extends World
 
     super ...
 
-    print "current level", @game.current_level
     if level = @levels[@game.current_level]
       level @
+
+  on_show: (...) =>
+    super ...
+    if @game\beat_game!
+      import GameOver from require "screens"
+      DISPATCHER\replace GameOver @game
 
   has_enemies: =>
     has_enemies = false
@@ -369,12 +411,15 @@ class Home extends World
       @game.current_level += 1
 
 class Game
-  current_level: 1
+  current_level: 5
   show_intro: false -- true
 
   @start: =>
     game = Game!
     Home game
+
+  beat_game: =>
+    not Ocean.levels[@current_level]
 
   new: =>
     @score = 0
@@ -393,7 +438,7 @@ love.load = ->
 
   g.setBackgroundColor 12,14, 15
 
-  import Title, GameOver from require "screens"
+  import Title from require "screens"
 
   export AUDIO = Audio "sounds"
   AUDIO\preload {

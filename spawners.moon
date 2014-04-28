@@ -40,4 +40,4 @@ class SharkSpawner extends Spawner
 
 
 { :Spawner, :SardineSpawner, :JellySpawner, :GuppySpawner, :SnakeSpawner,
-  SharkSpawner }
+  :SharkSpawner }
